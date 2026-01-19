@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_Setting_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 0d1a3eb419901d04d9e1be2fef482b5a, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 200148369408
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320763969536
+    m_Localized: General
+    m_Metadata:
+      m_Items: []
+  - m_Id: 379060600832
+    m_Localized: Sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 722175639552
+    m_Localized: Graphic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 807370342400
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5537224048640
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13005291372544
+    m_Localized: Russian
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13093925404672
+    m_Localized: English
+    m_Metadata:
+      m_Items: []
+  - m_Id: 144002490155008
+    m_Localized: Microphone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 149067955290112
+    m_Localized: Microphone mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 152077011894272
+    m_Localized: Voice activation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 152168217034752
+    m_Localized: Push to talk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 156436475002880
+    m_Localized: Main volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 156618646208512
+    m_Localized: Music volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 157051821342720
+    m_Localized: Sfx volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 157421427605504
+    m_Localized: Voice chat volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 159679552798720
+    m_Localized: Window mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 159851573788672
+    m_Localized: Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 159931101986816
+    m_Localized: Windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 159907978788864
+    m_Localized: Borderless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 160368647585792
+    m_Localized: Screen resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 933227523325952
+    m_Localized: Microphone sensitivity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1681480128774144
+    m_Localized: 'FPS Counter '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4224351629328384
+    m_Localized: Microphone check
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4239784730279936
+    m_Localized: Sensitivity Mouse
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

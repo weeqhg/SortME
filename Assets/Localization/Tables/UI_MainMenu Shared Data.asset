@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI_MainMenu Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: UI_MainMenu
+  m_TableCollectionNameGuidString: ec242cd841f701e41bb18b226d49d3c7
+  m_Entries:
+  - m_Id: 22423126016
+    m_Key: createRoom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24641912832
+    m_Key: joinRoom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26445463552
+    m_Key: author
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97387921408
+    m_Key: quitButton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26143340478464
+    m_Key: startGame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26244070883328
+    m_Key: copy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26350908194816
+    m_Key: back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26946331590656
+    m_Key: enterCode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 99712628015104
+    m_Key: enterLobbyName
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3940956582226427981
+  references:
+    version: 2
+    RefIds:
+    - rid: 3940956582226427981
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1767690662618

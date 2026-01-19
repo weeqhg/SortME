@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI_Setting Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: UI_Setting
+  m_TableCollectionNameGuidString: 0d1a3eb419901d04d9e1be2fef482b5a
+  m_Entries:
+  - m_Id: 200148369408
+    m_Key: settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 320763969536
+    m_Key: general
+    m_Metadata:
+      m_Items: []
+  - m_Id: 379060600832
+    m_Key: sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 722175639552
+    m_Key: graphic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 807370342400
+    m_Key: back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5537224048640
+    m_Key: language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13005291372544
+    m_Key: russian
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13093925404672
+    m_Key: english
+    m_Metadata:
+      m_Items: []
+  - m_Id: 144002490155008
+    m_Key: microphone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 149067955290112
+    m_Key: microphoneMode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 152077011894272
+    m_Key: voiceActivation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 152168217034752
+    m_Key: pushToTalk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 156436475002880
+    m_Key: mainVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 156618646208512
+    m_Key: musicVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 157051821342720
+    m_Key: sfxVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 157421427605504
+    m_Key: voiceVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 159679552798720
+    m_Key: windowMode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 159851573788672
+    m_Key: fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 159907978788864
+    m_Key: borderless
+    m_Metadata:
+      m_Items: []
+  - m_Id: 159931101986816
+    m_Key: windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 160368647585792
+    m_Key: screenResolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 933227523325952
+    m_Key: microphoneSensitivity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1681480128774144
+    m_Key: fpsCounter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4224351629328384
+    m_Key: checkMic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4239784730279936
+    m_Key: sensitivityMouse
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3940956567761846393
+  references:
+    version: 2
+    RefIds:
+    - rid: 3940956567761846393
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1767636220955
