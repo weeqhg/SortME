@@ -5,6 +5,7 @@ using WekenDev.MainMenu;
 using WekenDev.GameMenu;
 using WekenDev.Game;
 using WekenDev.Spawn.Player;
+using WekenDev.СustomizationMenu;
 
 public class Bootstrap : MonoBehaviour
 {
@@ -16,9 +17,13 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private GameObject _mainMenuCanvas;
     [SerializeField] private GameObject _settingMenuCanvas;
     [SerializeField] private GameObject _gameMenuCanvas;
+    [SerializeField] private GameObject _customizationPrefab;
+    [SerializeField] private GameObject _globalScorePrefab;
+    [SerializeField] private GameObject _audioManagerPrefab;
 
     //Нужные менеджеры будем объявлять отсюда или сразу создаваться
     [SerializeField] private GameManager _gameManager;
+    private IGameManager _gameManagerInterface;
     [SerializeField] private StartGame _startGame;
 
     private MainMenuManager _menuManager;
@@ -34,6 +39,10 @@ public class Bootstrap : MonoBehaviour
     private GameMenuManager _gameMenuManager;
     private IGameMenuController _gameMenu;
 
+    private СustomizationManager _сustomizationManager;
+    private ICustomizationMenu _customInterface;
+
+    private GlobalScoreRating _globalScoreRating;
     private void Start()
     {
         CreateObject();
@@ -60,6 +69,15 @@ public class Bootstrap : MonoBehaviour
         else Debug.LogWarning("Внимание модуль Game Manager не установлен");
 
         if (_startGame != null) _startGame = Instantiate(_startGame);
+
+        if (_customizationPrefab != null) _customizationPrefab = Instantiate(_customizationPrefab);
+        else Debug.LogWarning("Внимание модуль Customization не установлен");
+
+        if (_globalScorePrefab != null) _globalScorePrefab = Instantiate(_globalScorePrefab);
+        else Debug.LogWarning("Внимание модуль GlobalScore не установлен");
+
+        if (_audioManagerPrefab != null) _audioManagerPrefab = Instantiate(_audioManagerPrefab);
+        else Debug.LogWarning("Внимание модуль AudioManager не установлен");
     }
 
 
@@ -78,25 +96,39 @@ public class Bootstrap : MonoBehaviour
 
         if (_gameMenuCanvas != null) _gameMenuManager = _gameMenuCanvas.GetComponent<GameMenuManager>();
         if (_gameMenuCanvas != null) _gameMenu = _gameMenuCanvas.GetComponent<IGameMenuController>();
+
+        if (_customizationPrefab != null) _сustomizationManager = _customizationPrefab.GetComponent<СustomizationManager>();
+        if (_customizationPrefab != null) _customInterface = _customizationPrefab.GetComponent<ICustomizationMenu>();
+
+        if (_gameManager != null) _gameManagerInterface = _gameManager.GetComponent<IGameManager>();
+
+        if (_globalScorePrefab != null) _globalScoreRating = _globalScorePrefab.GetComponentInChildren<GlobalScoreRating>();
     }
 
     private void StartInitialized()
     {
         Recorder.Instance?.Init();
+        
+        AudioManager.Instance?.Init();
 
         _settingManager?.Init();
 
         _playerSpawn?.Init();
 
-        _menuManager?.Init(_settings, _gameManager);
+        _menuManager?.Init(_settings, _customInterface, _gameManagerInterface);
 
-        _gameMenuManager?.Init(_settings, _gameManager);
+        _gameMenuManager?.Init(_settings, _gameManagerInterface);
 
         _gameManager?.Init(_playerSpawn);
 
         _startGame?.Init(_gameLobby);
 
-        _gameLobby?.Init(_gameMenu, _settings, _mainMenu);
+        _gameLobby?.Init(_gameMenu, _settings, _mainMenu, _gameManagerInterface);
+
+        _сustomizationManager?.Init(_mainMenu, _gameManagerInterface);
+
+        _globalScoreRating?.Init(_gameManagerInterface);
+
     }
 
 

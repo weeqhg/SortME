@@ -38,7 +38,7 @@ namespace WekenDev.Settings
             _mainSetting.alpha = 0f;
             _mainSetting.interactable = false;
             _mainSetting.blocksRaycasts = false;
-            
+
             OnSettingsDisableUI?.Invoke();
         }
 
@@ -82,6 +82,14 @@ namespace WekenDev.Settings
             _graphicSetting.alpha = 0f;
             _graphicSetting.interactable = false;
             _graphicSetting.blocksRaycasts = false;
+        }
+
+        private void OnDestroy()
+        {
+            if (_generalButton != null) _generalButton.onClick.RemoveListener(ShowGeneraly);
+            if (_soundButton != null) _soundButton.onClick.RemoveListener(ShowSound);
+            if (_graphicButton != null) _graphicButton.onClick.RemoveListener(ShowGraphics);
+            if (_backButton != null) _backButton.onClick.RemoveListener(HideSetting);
         }
     }
 }

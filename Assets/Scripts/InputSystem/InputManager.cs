@@ -37,23 +37,27 @@ namespace WekenDev.InputSystem
             switch (inputType)
             {
                 case InputType.Player:
-                    Debug.Log("Input Для Player");
+
                     Cursor.visible = false;
+                    Cursor.lockState = CursorLockMode.Locked;
                     _actions.Player.Enable();
                     _actions.UI.Disable();
+                    Debug.Log("PlayerInput");
                     break;
                 case InputType.UI:
-                    Debug.Log("Input Для UI");
+
                     Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.None;
                     _actions.Player.Disable();
                     _actions.UI.Enable();
+                    Debug.Log("UIInput");
                     break;
             }
         }
 
         private void OnDestroy()
         {
-            _actions.Disable();
+            if (_actions != null) _actions.Disable();
         }
     }
 }

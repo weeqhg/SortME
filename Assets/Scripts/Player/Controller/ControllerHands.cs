@@ -1,8 +1,8 @@
+using System;
 using UnityEngine;
 
 namespace WekenDev.Player.Controller
 {
-
     public class ControllerHands : MonoBehaviour
     {
         [Header("Ссылки")]
@@ -11,27 +11,18 @@ namespace WekenDev.Player.Controller
         [SerializeField] private Rigidbody _rightHand;
         [SerializeField] private Transform _cameraPivot;
         [SerializeField] private Transform _armsCenterPoint;
-        [SerializeField] private Transform _leftHandTip; // Пустой GameObject на конце левой руки
-        [SerializeField] private Transform _rightHandTip; // Пустой GameObject на конце правой руки
+        [SerializeField] private Transform _leftEnd;
+        [SerializeField] private Transform _rightEnd;
+        [SerializeField] private HandGrab _leftHandGrabs;
+        [SerializeField] private HandGrab _rightHandGrabs;
+
         //Подъем рук
-        [SerializeField] private float _handForce = 100f; //Сила подъема рук
-        private float _dragForce = 5f;
+        [SerializeField] private float _handForce = 400f; //Сила подъема рук
 
         //Стабилизация при ходьбе
-        [SerializeField] private float downForce = 15f;
-        [SerializeField] private float returnForce = 1f;
-        [SerializeField] private float _maxArmDistance = 0.5f;
-
-        // Цели для кончиков рук
-        private Vector3 _leftTipTarget;
-        private Vector3 _rightTipTarget;
-
-        // Позиции покоя рук
-        private Vector3 _leftHandRestPosition;
-        private Vector3 _rightHandRestPosition;
-
+        [SerializeField] private float downForce = 200f;
+        public ControllerHands otherHands;
         //Ввод игрока
-    
         private bool _leftHandActive;
         private bool _rightHandActive;
 
@@ -42,112 +33,69 @@ namespace WekenDev.Player.Controller
             _rightHandActive = right;
         }
 
-        private void Update()
+        public void OnUp()
         {
-            // Обновляем позиции покоя (они двигаются с телом)
-            UpdateRestPositions();
-
-            // Обновляем целевые позиции
-            UpdateTipTargets();
+            _leftHandGrabs.ToggleUp(true);
+            _rightHandGrabs.ToggleUp(true);
         }
 
-        private void UpdateRestPositions()
+        public void OnDown()
         {
-            // Позиции покоя - руки свисают по бокам тела
-            _leftHandRestPosition = _playerBody.position +
-                                  _playerBody.transform.right * -0.5f +
-                                  Vector3.down * 1f;
-
-            _rightHandRestPosition = _playerBody.position +
-                                   _playerBody.transform.right * 0.5f +
-                                   Vector3.down * 1f;
-        }
-
-        private void UpdateTipTargets()
-        {
-            // ЛЕВАЯ РУКА
-            if (_leftHandActive)
-            {
-                // Вычисляем целевую позицию
-                _leftTipTarget = _cameraPivot.position;
-            }
-            else
-            {
-                // Неактивная рука: цель = позиция покоя
-                _leftTipTarget = _leftHandRestPosition;
-
-
-            }
-
-            // ПРАВАЯ РУКА
-            if (_rightHandActive)
-            {
-                // Вычисляем целевую позицию
-                _rightTipTarget = _cameraPivot.position;
-            }
-            else
-            {
-                // Неактивная рука: цель = позиция покоя
-                _rightTipTarget = _rightHandRestPosition;
-            }
+            _leftHandGrabs.ToggleUp(false);
+            _rightHandGrabs.ToggleUp(false);
         }
 
         private void FixedUpdate()
         {
-            // ОБРАБОТКА ЛЕВОЙ РУКИ
-            if (_leftHand != null)
+            if (_leftHandActive)
             {
-                if (_leftHandActive)
-                {
-                    // Активная рука: следим за целью
-                    MoveHandToTarget(_leftHand, _leftTipTarget);
-                }
-                else
-                {
-                    // Неактивная рука: стабилизируемся
-                    StabilizeHand(_leftHand, _leftHandRestPosition, false);
-                }
-
-                // Ограничение расстояния
-                LimitHandDistance(_leftHand);
+                MoveHandToTarget(_leftHand);
+                _leftHandGrabs.TryGrabObject();
+            }
+            else
+            {
+                StabilizeHand(_leftHand);
+                _leftHandGrabs.ReleaseObject();
             }
 
-            // ОБРАБОТКА ПРАВОЙ РУКИ
-            if (_rightHand != null)
+            if (_rightHandActive)
             {
-                if (_rightHandActive)
-                {
-                    // Активная рука: следим за целью
-                    MoveHandToTarget(_rightHand, _rightTipTarget);
-                }
-                else
-                {
-                    // Неактивная рука: стабилизируемся
-                    StabilizeHand(_rightHand, _rightHandRestPosition, false);
-                }
-
-                // Ограничение расстояния
-                LimitHandDistance(_rightHand);
+                MoveHandToTarget(_rightHand);
+                _rightHandGrabs.TryGrabObject();
             }
+            else
+            {
+                StabilizeHand(_rightHand);
+                _rightHandGrabs.ReleaseObject();
+            }
+
+            if (!_leftHandActive && !_rightHandActive)
+            {
+                ReleasePlayer();
+            }
+
         }
 
-        private void MoveHandToTarget(Rigidbody hand, Vector3 targetTipPosition)
+        public void ReleasePlayer()
         {
-            Transform handTip = (hand == _leftHand) ? _leftHandTip : _rightHandTip;
+            if (otherHands == null) return;
 
-            // 1. Определяем смещение в сторону от центра
-            float sideOffset = 0.15f; // Расстояние от центра
+            otherHands.OnDown();
+            otherHands = null;
+        }
+
+        private void MoveHandToTarget(Rigidbody hand)
+        {
+            float sideOffset = 0.05f; //Внимание
             bool isLeftHand = (hand == _leftHand);
 
-            // 2. Смещаем цель в сторону от центра cameraPivot
             Vector3 sideDirection = isLeftHand ? -_cameraPivot.right : _cameraPivot.right;
-            Vector3 offsetTarget = targetTipPosition + sideDirection * sideOffset;
+            Vector3 handEnd = isLeftHand ? _leftEnd.position : _rightEnd.position;
+            Vector3 offsetTarget = _cameraPivot.position + sideDirection * sideOffset;
 
-            // 3. Вычисляем позицию центра руки
-            Vector3 tipToHand = hand.position - handTip.position;
+            Vector3 tipToHand = handEnd - hand.position;
             Vector3 targetHandPosition = offsetTarget + tipToHand;
 
-            // 4. Сила к нужной позиции центра
             Vector3 toTarget = targetHandPosition - hand.position;
             float distance = toTarget.magnitude;
 
@@ -159,78 +107,25 @@ namespace WekenDev.Player.Controller
                 if (_playerBody != null)
                 {
                     Vector3 forceDirection = -toTarget.normalized;
-                    _playerBody.AddForce(forceDirection * forceMultiplier * 1f);
+                    _playerBody.AddForce(forceDirection * forceMultiplier * 0.8f);
                 }
             }
-
-            // 5. Демпфирование
-            hand.AddForce(-hand.linearVelocity * _dragForce);
-
         }
 
-        private void StabilizeHand(Rigidbody hand, Vector3 restPosition, bool isActiveHand)
+        private void StabilizeHand(Rigidbody hand)
         {
-            // Только для неактивных рук
-            if (isActiveHand) return;
-
             // 1. Притяжение к позиции покоя
-            Vector3 toRest = restPosition - hand.position;
-            float distanceToRest = toRest.magnitude;
+            bool isLeftHand = (hand == _leftHand);
+            Vector3 handEnd = isLeftHand ? _leftEnd.position : _rightEnd.position;
 
-            if (distanceToRest > 0.1f)
+            Vector3 handForce = Vector3.down * downForce * Time.fixedDeltaTime * 50f;
+
+            hand.AddForceAtPosition(handForce, handEnd, ForceMode.Force);
+
+            if (_playerBody != null)
             {
-                float restForce = Mathf.Clamp(distanceToRest * returnForce, 0f, returnForce);
-                hand.AddForce(toRest.normalized * restForce * Time.fixedDeltaTime * 50f);
-            }
-
-            // 2. Мягкая сила вниз
-            hand.AddForce(Vector3.down * downForce * Time.fixedDeltaTime * 50f);
-
-            // 3. Сильное демпфирование для неактивных рук
-            hand.AddForce(-hand.linearVelocity * _dragForce * 2f);
-
-            // 4. Стабилизация вращения (руки свисают вниз)
-            StabilizeHandRotation(hand, restPosition + Vector3.down * 0.5f);
-        }
-
-        private void StabilizeHandRotation(Rigidbody hand, Vector3 lookAtPosition)
-        {
-            // Направление взгляда руки
-            Vector3 lookDirection = (lookAtPosition - hand.position).normalized;
-            if (lookDirection == Vector3.zero) lookDirection = Vector3.down;
-
-            // Целевое вращение
-            Quaternion targetRotation = Quaternion.LookRotation(lookDirection, Vector3.forward);
-            Quaternion rotationDelta = targetRotation * Quaternion.Inverse(hand.rotation);
-
-            rotationDelta.ToAngleAxis(out float angle, out Vector3 axis);
-
-            // Нормализуем угол
-            if (angle > 180f) angle -= 360f;
-
-            // Применяем плавное вращение
-            if (Mathf.Abs(angle) > 0.5f)
-            {
-                float torqueMultiplier = Mathf.Clamp(angle * 0.02f, -2f, 2f);
-                Vector3 torque = axis * (torqueMultiplier * Mathf.Deg2Rad);
-                hand.AddTorque(torque);
-            }
-
-            // Демпфирование вращения
-            hand.AddTorque(-hand.angularVelocity * 2f);
-        }
-
-        private void LimitHandDistance(Rigidbody hand)
-        {
-            if (_playerBody == null) return;
-
-            Vector3 toHand = hand.position - _armsCenterPoint.position;
-            float distance = toHand.magnitude;
-
-            if (distance > _maxArmDistance)
-            {
-                Vector3 pushBack = -toHand.normalized * returnForce * 2f * (distance - _maxArmDistance);
-                hand.AddForce(pushBack * Time.fixedDeltaTime * 50f);
+                Vector3 bodyForce = -handForce;
+                _playerBody.AddForceAtPosition(bodyForce, handEnd, ForceMode.Force);
             }
         }
 
@@ -238,79 +133,39 @@ namespace WekenDev.Player.Controller
         {
             if (_playerBody == null) return;
 
-            // Область досягаемости
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(_armsCenterPoint.position, _maxArmDistance);
+            DrawSimpleForce(_leftHand, _leftHandActive, Color.red);
+            DrawSimpleForce(_rightHand, _rightHandActive, Color.blue);
+        }
 
-            // Отладочные линии для рук
-            if (_leftHand != null)
+        private void DrawSimpleForce(Rigidbody hand, bool active, Color color)
+        {
+            if (hand == null) return;
+
+            bool isLeftHand = (hand == _leftHand);
+            Vector3 handEnd = isLeftHand ? _leftEnd.position : _rightEnd.position;
+
+            // Точка приложения силы
+            Gizmos.color = color;
+            Gizmos.DrawSphere(handEnd, 0.03f);
+
+            // Направление силы
+            if (active)
             {
-                // Линия от конца левой руки к цели
-                Vector3 leftHandTip = (_leftHandTip != null) ? _leftHandTip.position :
-                     _leftHand.position + _leftHand.transform.forward * 0.5f;
+                // К камере
+                float sideOffset = 0.05f;
+                Vector3 sideDirection = isLeftHand ? -_cameraPivot.right : _cameraPivot.right;
+                Vector3 offsetTarget = _cameraPivot.position + sideDirection * sideOffset;
 
-                if (_leftHandActive && _cameraPivot != null)
-                {
-                    // Активная рука: линия к cameraPivot
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawLine(leftHandTip, _cameraPivot.position);
-
-                    // Точка цели
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawSphere(_cameraPivot.position, 0.07f);
-                }
-                else
-                {
-                    // Неактивная рука: линия к позиции покоя
-                    Gizmos.color = Color.yellow;
-                    Gizmos.DrawLine(leftHandTip, _leftHandRestPosition);
-                }
-
-                // Визуализация длины руки
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawLine(_leftHand.position, leftHandTip);
-                Gizmos.DrawSphere(leftHandTip, 0.03f);
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawLine(handEnd, offsetTarget);
             }
-
-            if (_rightHand != null)
+            else
             {
-                // Линия от конца правой руки к цели
-                Vector3 rightHandTip = (_rightHandTip != null) ? _rightHandTip.position :
-                       _rightHand.position + _rightHand.transform.forward * 0.5f;
-
-                if (_rightHandActive && _cameraPivot != null)
-                {
-                    // Активная рука: линия к cameraPivot
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawLine(rightHandTip, _cameraPivot.position);
-
-                    // Точка цели
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawSphere(_cameraPivot.position, 0.07f);
-                }
-                else
-                {
-                    // Неактивная рука: линия к позиции покоя
-                    Gizmos.color = Color.yellow;
-                    Gizmos.DrawLine(rightHandTip, _rightHandRestPosition);
-                }
-
-                // Визуализация длины руки
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawLine(_rightHand.position, rightHandTip);
-                Gizmos.DrawSphere(rightHandTip, 0.03f);
-            }
-
-            // Линия от игрока к cameraPivot
-            if (_cameraPivot != null)
-            {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawLine(_playerBody.position, _cameraPivot.position);
-
-                // Направление вперед от cameraPivot
-                Gizmos.color = Color.blue;
-                Gizmos.DrawRay(_cameraPivot.position, _cameraPivot.forward * 0.5f);
+                // Вниз
+                Gizmos.color = Color.red;
+                Gizmos.DrawRay(handEnd, Vector3.down * 0.3f);
             }
         }
+
     }
 }

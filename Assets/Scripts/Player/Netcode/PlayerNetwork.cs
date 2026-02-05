@@ -4,14 +4,16 @@ using UnityEngine.InputSystem;
 using WekenDev.InputSystem;
 using WekenDev.Player.Controller;
 
-namespace WekenDev.Player.Netcode
+namespace WekenDev.Player
 {
 
     public class PlayerNetwork : NetworkBehaviour
     {
         [Header("Network Settings")]
         [SerializeField] private GameObject _myCamera;
-        [SerializeField] private float sendRate = 0.05f; // 20 раз в секунду
+        [SerializeField] private GameObject _body;
+        [SerializeField] private float _sendRate = 0.05f; // 20 раз в секунду
+        private ChangeColorPlayer _colorPlayer;
         private float _sendTimer = 0f;
 
         //Ввод игрока
@@ -22,9 +24,10 @@ namespace WekenDev.Player.Netcode
         private InputAction _jumpInput;
 
         //Ссылки на управление игрока
-        private TestControllerHands _handsController;
+        private ControllerHands _handsController;
         private RotationPlayer _cameraController;
         private PlayerController _playerController;
+        private ChangeClothPlayer _clothPlayer;
 
         //Активация рук
         private bool _leftHandActive;
@@ -36,17 +39,20 @@ namespace WekenDev.Player.Netcode
         //Прыжок
         private bool _isJump;
 
-        private void Start()
-        {
-            Init();
-        }
         public void Init()
         {
-            _handsController = GetComponent<TestControllerHands>();
+            _handsController = GetComponent<ControllerHands>();
             _cameraController = GetComponent<RotationPlayer>();
             _playerController = GetComponent<PlayerController>();
-
-            if (!IsOwner) return;
+            _clothPlayer = GetComponent<ChangeClothPlayer>();
+            _colorPlayer = GetComponent<ChangeColorPlayer>();
+            
+            _colorPlayer.Init();
+            _clothPlayer.Init();
+            if (!IsOwner)
+            {
+                return;
+            }
 
             _myCamera.SetActive(true);
 
@@ -72,9 +78,19 @@ namespace WekenDev.Player.Netcode
             _rightMouse.canceled += ctx => _rightHandActive = false;
         }
 
+        private void SetLayerRecursively(GameObject obj, int layer)
+        {
+            obj.layer = layer;
+            foreach (Transform child in obj.transform)
+            {
+                SetLayerRecursively(child.gameObject, layer);
+            }
+        }
+
         private void Update()
         {
             if (!IsOwner) return;
+            if (_moveInput == null || _lookInput == null) return;
 
             Vector2 moveInput = _moveInput.ReadValue<Vector2>();
             Vector2 lookInput = _lookInput.ReadValue<Vector2>();
@@ -82,7 +98,7 @@ namespace WekenDev.Player.Netcode
 
             // Таймер для оптимизированной отправки
             _sendTimer += Time.deltaTime;
-            if (_sendTimer >= sendRate)
+            if (_sendTimer >= _sendRate)
             {
                 _handsController.GetInput(_leftHandActive, _rightHandActive);
 
@@ -97,7 +113,7 @@ namespace WekenDev.Player.Netcode
         [ServerRpc]
         private void SendAllInputsServerRpc(Vector2 moveInput, Vector2 lookInput, bool leftHand, bool rightHand, bool jump)
         {
-            _playerController.GetInput(moveInput, jump);
+            _playerController.GetInput(moveInput, jump, leftHand, rightHand);
 
             _cameraController.GetInput(lookInput);
 

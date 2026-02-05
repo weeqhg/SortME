@@ -18,32 +18,32 @@ namespace WekenDev.Settings.Sound
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            Recorder.Instance.SetCheckMicrophone(true);
+            Recorder.Instance?.SetCheckMicrophone(true);
             _button.image.color = _active;
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            Recorder.Instance.SetCheckMicrophone(false);
+            Recorder.Instance?.SetCheckMicrophone(false);
             _button.image.color = _deactive;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            Recorder.Instance.SetCheckMicrophone(false);
+            Recorder.Instance?.SetCheckMicrophone(false);
             _button.image.color = _deactive;
         }
 
         private void OnDisable()
         {
-            Recorder.Instance.SetCheckMicrophone(false);
+            Recorder.Instance?.SetCheckMicrophone(false);
             _button.image.color = _deactive;
         }
 
         // На случай уничтожения объекта
         private void OnDestroy()
         {
-            Recorder.Instance.SetCheckMicrophone(false);
+            Recorder.Instance?.SetCheckMicrophone(false);
             _button.image.color = _deactive;
         }
     }

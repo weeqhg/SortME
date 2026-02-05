@@ -222,7 +222,7 @@ namespace WekenDev.Spawn.Player
             SpawnPlayer(clientId);
         }
 
-        public override void OnDestroy()
+        public override void OnNetworkDespawn()
         {
             if (_networkManager != null)
             {
@@ -230,6 +230,8 @@ namespace WekenDev.Spawn.Player
                 _networkManager.OnClientDisconnectCallback -= OnClientDisconnected;
             }
             if (_playersId != null) _playersId.OnListChanged -= OnListPlayerChanged;
+
+            _localPlayerManagers.Clear();
         }
     }
 }

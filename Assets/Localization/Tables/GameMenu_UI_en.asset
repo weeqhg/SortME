@@ -26,6 +26,10 @@ MonoBehaviour:
     m_Localized: Disconnect
     m_Metadata:
       m_Items: []
+  - m_Id: 8780319679692800
+    m_Localized: 'Rating: {0}'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

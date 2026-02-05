@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using WekenDev.InputSystem;
+
 
 namespace WekenDev.Settings.General
 {
@@ -27,7 +26,6 @@ namespace WekenDev.Settings.General
 
         private void SetSensitivityMouse(float value)
         {
-
             if (_text != null)
             {
                 _text.text = $"{value:F2}";

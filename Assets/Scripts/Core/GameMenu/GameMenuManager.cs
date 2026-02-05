@@ -4,14 +4,13 @@ using UnityEngine.InputSystem;
 using WekenDev.GameMenu.UI;
 using WekenDev.GameMenu.Voice;
 using WekenDev.InputSystem;
-using WekenDev.Game;
 
 public interface IGameMenuController
 {
     void HideMenu();
-    void ShowMenu();
-    public event Action OnLeaveGame;
+    event Action OnLeaveGame;
 }
+
 
 namespace WekenDev.GameMenu
 {
@@ -19,7 +18,7 @@ namespace WekenDev.GameMenu
     {
         private GameMenuUI _gameMenuUI;
         private VoiceHudGameMenu _voiceHudGameMenu;
-        private GameManager _gameManager;
+        private IGameManager _gameManager;
         private ISettings _settings;
         private InputAction _actionPlayer;
         private InputAction _actionUI;
@@ -30,17 +29,11 @@ namespace WekenDev.GameMenu
             _gameMenuUI.HideGeneralMenu();
         }
 
-        public void ShowMenu()
-        {
-            if (_gameManager != null && !_gameManager.IsHaveLocalPlayer) return;
-
-            InputManager.Instance.ChangeInputType(InputType.UI);
-            _gameMenuUI.ShowGeneralMenu();
-        }
-
-        public void Init(ISettings setting, GameManager gameManager)
+        public void Init(ISettings setting, IGameManager gameManager)
         {
             _voiceHudGameMenu = GetComponentInChildren<VoiceHudGameMenu>();
+
+            _gameManager = gameManager;
 
             _settings = setting;
             if (_settings != null) _settings.OnClosed += HandleBackToggled;
@@ -48,6 +41,7 @@ namespace WekenDev.GameMenu
             if (InputManager.Instance == null) Debug.Log($"Не найден {InputManager.Instance.GetType()}");
             _actionPlayer = InputManager.Instance.Actions.Player.Cancel;
             _actionUI = InputManager.Instance.Actions.UI.Cancel;
+
             if (_actionPlayer != null) _actionPlayer.started += HandleShowMenu;
             if (_actionUI != null) _actionUI.started += HandleHideMenu;
 
@@ -78,14 +72,14 @@ namespace WekenDev.GameMenu
 
         private void HandleBackToggled()
         {
-            //Есть игрок или нет
-            //Если есть то показываем меню, если нет то не показываем
-            if (_gameManager != null && _gameManager.IsHaveLocalPlayer) _gameMenuUI.ShowGeneralMenu();
+            if (_gameManager == null || _gameManager?.GetCurrentState() != GameState.MainMenu)
+            {
+                _gameMenuUI.ShowGameMenu();
+            }
         }
 
         private void HandleSettingsToggled()
         {
-            Debug.Log("Показать настройки");
             _settings?.Show();
         }
 
@@ -96,25 +90,42 @@ namespace WekenDev.GameMenu
 
         private void HandleShowMenu(InputAction.CallbackContext context)
         {
-            if (_gameManager != null && !_gameManager.IsHaveLocalPlayer) return;
-
-            // Показываем меню
-            InputManager.Instance.ChangeInputType(InputType.UI);
-            _gameMenuUI.ShowGeneralMenu();
-
+            AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
+            if (_gameManager == null)
+            {
+                InputManager.Instance.ChangeInputType(InputType.UI);
+                _gameMenuUI.ShowGameMenu();
+                return;
+            }
+            if (_gameManager?.GetCurrentState() != GameState.MainMenu)
+            {
+                _gameManager?.SwitchCurrentState(GameState.Paused);
+                _gameMenuUI.ShowGameMenu();
+            }
         }
 
         private void HandleHideMenu(InputAction.CallbackContext context)
         {
-            if (_gameManager != null && !_gameManager.IsHaveLocalPlayer) return;
-
-            InputManager.Instance.ChangeInputType(InputType.Player);
-            _gameMenuUI.HideGeneralMenu();
+            AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
+            // 1. Проверка на null ПЕРВОЙ
+            if (_gameManager == null)
+            {
+                InputManager.Instance.ChangeInputType(InputType.Player);
+                _gameMenuUI.HideGeneralMenu();
+                return; // Выходим
+            }
+            // 2. Проверка состояния игры
+            if (_gameManager?.GetCurrentState() != GameState.MainMenu)
+            {
+                _gameManager?.SwitchCurrentState(GameState.Playing);
+                _gameMenuUI.HideGeneralMenu();
+            }
         }
 
         private void OnEscpaeDisable()
         {
-            InputManager.Instance.ChangeInputType(InputType.Player);
+            if (_gameManager != null) _gameManager?.SwitchCurrentState(GameState.Playing);
+            else InputManager.Instance.ChangeInputType(InputType.Player);
         }
 
         private void OnDestroy()

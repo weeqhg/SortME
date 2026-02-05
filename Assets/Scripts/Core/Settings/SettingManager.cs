@@ -2,7 +2,6 @@ using UnityEngine;
 using WekenDev.Settings.Sound;
 using WekenDev.Settings.General;
 using WekenDev.Settings.Graphic;
-using WekenDev.GameMenu;
 using WekenDev.InputSystem;
 using UnityEngine.InputSystem;
 using System;
@@ -84,6 +83,7 @@ namespace WekenDev.Settings
 
         private void HandleDisableSettingKey(InputAction.CallbackContext context)
         {
+            AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
             _settingUI.HideSetting();
         }
 

@@ -9,13 +9,25 @@ namespace WekenDev.Player
         [SerializeField] private NetworkVoice _voicePlayer;
         private InputManager _inputManager;
         public AudioSource voiceAudioSource;
+        private PlayerNetwork playerNetwork;
 
+#if UNITY_EDITOR
+        private void Start()
+        {
+            // Этот метод полностью удаляется из билда
+            if (Application.isEditor)
+            {
+                Init();
+                InputManager.Instance.ChangeInputType(InputType.Player);
+                Debug.Log("Тестовый код в редакторе");
+            }
+        }
+#endif
         public void Init()
         {
-            _inputManager = InputManager.Instance;
-            if(_inputManager == null) Debug.Log("Игрок не получил inputmanager");
-            if (_inputManager != null) _inputManager.ChangeInputType(InputType.Player);
-            _voicePlayer.Init();
+            playerNetwork = GetComponent<PlayerNetwork>();
+            playerNetwork.Init();
+            if (Recorder.Instance != null) _voicePlayer.Init();
         }
 
     }

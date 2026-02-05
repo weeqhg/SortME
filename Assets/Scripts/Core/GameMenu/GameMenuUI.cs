@@ -25,7 +25,7 @@ namespace WekenDev.GameMenu.UI
             _disconnect.onClick.AddListener(LeaveLobby);
         }
 
-        public void ShowGeneralMenu()
+        public void ShowGameMenu()
         {
             HideAll();
 

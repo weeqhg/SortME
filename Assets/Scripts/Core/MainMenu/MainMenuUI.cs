@@ -16,15 +16,16 @@ namespace WekenDev.MainMenu.UI
         [SerializeField] private CanvasGroup _authorMenu;
 
         [Header("Buttons")]
-        [SerializeField] private Button _lobbyGame;
+        [SerializeField] private Button _createGame;
         [SerializeField] private Button _joinLobby;
+        [SerializeField] private Button _customizeMenu;
         [SerializeField] private Button _joinGame;
         [SerializeField] private Button _settingGame;
         [SerializeField] private Button _authorGame;
         [SerializeField] private Button _quitGame;
 
         public event Action OnSettingsActiveUI;
-        public event Action OnLobbyGameUI;
+        public event Action OnСustomizationMenu;
 
         public void Init()
         {
@@ -32,8 +33,9 @@ namespace WekenDev.MainMenu.UI
 
             version.text = "v" + Application.version;
 
-            _lobbyGame.onClick.AddListener(ShowWaitStartRoom);
+            _createGame.onClick.AddListener(ShowWaitStartRoom);
             _joinLobby.onClick.AddListener(ShowJoinRoom);
+            _customizeMenu.onClick.AddListener(ShowCustomize);
             _joinGame.onClick.AddListener(ShowWaitStartRoom);
             _authorGame.onClick.AddListener(ShowAuthor);
             _settingGame.onClick.AddListener(ShowSetting);
@@ -56,8 +58,6 @@ namespace WekenDev.MainMenu.UI
             _lobbyMenu.alpha = 1f;
             _lobbyMenu.interactable = true;
             _lobbyMenu.blocksRaycasts = true;
-
-            OnLobbyGameUI?.Invoke();
         }
 
         private void ShowJoinRoom()
@@ -67,6 +67,13 @@ namespace WekenDev.MainMenu.UI
             _joinMenu.alpha = 1f;
             _joinMenu.interactable = true;
             _joinMenu.blocksRaycasts = true;
+        }
+
+        private void ShowCustomize()
+        {
+            HideAll();
+
+            OnСustomizationMenu?.Invoke();
         }
 
 
@@ -107,6 +114,7 @@ namespace WekenDev.MainMenu.UI
 
         private void QuitGame()
         {
+            AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
             Debug.Log("Выход из игры...");
 
 #if UNITY_EDITOR

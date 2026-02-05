@@ -23,6 +23,10 @@ MonoBehaviour:
     m_Key: disconnect
     m_Metadata:
       m_Items: []
+  - m_Id: 8780319679692800
+    m_Key: rating
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

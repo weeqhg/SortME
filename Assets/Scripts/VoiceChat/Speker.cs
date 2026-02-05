@@ -44,5 +44,10 @@ namespace WekenDev.VoiceChat
 
             _clip.SetData(_clipData, 0);
         }
+
+        private void OnDestroy()
+        {
+            _source = null;
+        }
     }
 }

@@ -23,11 +23,11 @@ namespace WekenDev.Settings.General
 
         private void LoadSave()
         {
-           int enabled = PlayerPrefs.GetInt("FPS", 0);
-           if (enabled == 1) _isShowFps = true; 
-           else _isShowFps = false;
-           
-           _toggle.isOn = _isShowFps;
+            int enabled = PlayerPrefs.GetInt("FPS", 0);
+            if (enabled == 1) _isShowFps = true;
+            else _isShowFps = false;
+
+            _toggle.isOn = _isShowFps;
         }
 
         private void OnGUI()

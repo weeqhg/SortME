@@ -14,11 +14,11 @@ namespace WekenDev.VoiceChat
 
             _localSpeaker = GetComponent<Speaker>();
 
-            if (_recorder == null) Debug.Log($"Не найден{_recorder.GetType()}");
+            if (_recorder == null) Debug.Log($"Не найден модуль Recoder");
 
             _localSpeaker.Init();
 
-            _recorder.OnSendDataToNetwork += SendVoiceToServer;
+            if (_recorder != null) _recorder.OnSendDataToNetwork += SendVoiceToServer;
         }
 
         // Отправка голоса на сервер

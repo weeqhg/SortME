@@ -1,11 +1,23 @@
 {
   "dependencies": {
+    "bz-soft.ragdoll-helper": {
+      "version": "file:bz-soft.ragdoll-helper",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.adrenak.concentus-unity": {
       "version": "1.0.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://registry.npmjs.org"
+    },
+    "com.endel.nativewebsocket": {
+      "version": "file:C:/Users/Никита/Downloads/NativeWebSocket-1.1.5/NativeWebSocket-1.1.5/NativeWebSocket/Assets",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

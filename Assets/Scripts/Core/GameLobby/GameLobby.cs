@@ -28,6 +28,7 @@ namespace WekenDev.MainMenu
         private IGameMenuController _gameMenu;
         private ISettings _settings;
         private IMainMenu _mainMenu;
+        private IGameManager _gameManager;
 
         public event Action OnStartGame;
 
@@ -37,13 +38,13 @@ namespace WekenDev.MainMenu
             GameScene
         }
 
-        public void Init(IGameMenuController gameMenu, ISettings settings, IMainMenu mainMenu)
+        public void Init(IGameMenuController gameMenu, ISettings settings, IMainMenu mainMenu, IGameManager gameManager)
         {
             InitializeAuth();
 
             _settings = settings;
             _mainMenu = mainMenu;
-
+            _gameManager = gameManager;
             _gameMenu = gameMenu;
             if (_gameMenu != null) _gameMenu.OnLeaveGame += LeaveLobbyAndRelay;
 
@@ -73,7 +74,7 @@ namespace WekenDev.MainMenu
         {
             try
             {
-                if (_mainMenu != null) _mainMenu.IsActive = false;
+                _gameManager.SwitchCurrentState(GameState.Playing);
                 // 1. Создаем лобби
                 joinedLobby = await LobbyService.Instance.CreateLobbyAsync(
                     "0000",
@@ -124,6 +125,8 @@ namespace WekenDev.MainMenu
         private async void JoinLobby(string lobbyCode)
         {
             _lobbyUI.ChangeJoinCode(lobbyCode);
+
+
             try
             {
                 // 1. Находим лобби
@@ -148,6 +151,8 @@ namespace WekenDev.MainMenu
 
                 // 5. Запускаем клиент
                 NetworkManager.Singleton.StartClient();
+
+                _gameManager.SwitchCurrentState(GameState.Playing);
 
                 _mainMenu?.Hide();
 
@@ -219,7 +224,8 @@ namespace WekenDev.MainMenu
                     Debug.Log("ℹ️ Лобби уже null, пропускаем выход");
                 }
 
-                if (_mainMenu != null) _mainMenu.IsActive = true;
+                _gameManager.SwitchCurrentState(GameState.MainMenu);
+
                 _mainMenu?.Show();
                 _gameMenu?.HideMenu();
                 _settings?.Hide();
