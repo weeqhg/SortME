@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using DG.Tweening;
 
 namespace WekenDev.Player.Controller
 {
@@ -7,6 +8,9 @@ namespace WekenDev.Player.Controller
     public class PlayerController : NetworkBehaviour
     {
         [SerializeField] private Rigidbody _mainBody;
+        [SerializeField] private AudioSource _audioSource;
+        [SerializeField] private AudioClip[] _footsteps;
+        [SerializeField] private AudioClip _jumpClip;
 
         [Header("Leg Animation")]
         [SerializeField] private Transform _feetsPos;
@@ -27,8 +31,8 @@ namespace WekenDev.Player.Controller
         private float _swingPhase = 0f; // Фаза для синусоиды
 
         // Запоминаем начальное вращение ног
-        private Quaternion _leftLegStartRotation = Quaternion.Euler(-80f, 0f, 0f);
-        private Quaternion _rightLegStartRotation = Quaternion.Euler(-80f, 0f, 0f);
+        private Vector3 _startPosLeft;
+        private Vector3 _startPosRight;
 
         private Vector3 _cachedForward;
         private Vector3 _cachedRight;
@@ -40,6 +44,15 @@ namespace WekenDev.Player.Controller
         private bool _rightHand;
         private NetworkVariable<bool> _netMove = new();
 
+        public void Init()
+        {
+            _netMove.OnValueChanged += OnMoveStateChanged;
+
+            _startPosLeft = _leftLeg.localPosition;
+
+            _startPosRight = _rightLeg.localPosition;
+        }
+
         public void GetInput(Vector2 moveInput, bool jump, bool leftHand, bool rightHand)
         {
             _moveInput = moveInput;
@@ -48,32 +61,56 @@ namespace WekenDev.Player.Controller
             _rightHand = rightHand;
         }
 
-
-        private void Update()
+        private void AudioEffect()
         {
-            AnimationWalk();
+            if (_audioSource == null && _footsteps.Length > 0) return;
+
+            if (IsGrounded())
+            {
+                AudioClip randomClip = _footsteps[Random.Range(0, _footsteps.Length)];
+                _audioSource.PlayOneShot(randomClip);
+            }
         }
 
-        private void AnimationWalk()
+        private void OnMoveStateChanged(bool oldValue, bool newValue)
+        {
+            StartWalkAnimation();
+        }
+
+        private void StartWalkAnimation()
         {
             if (_netMove.Value)
             {
-                float swing = Mathf.Sin(_swingPhase) * 90f;
+                DOTween.Kill(_leftLeg);
+                DOTween.Kill(_rightLeg);
 
-                _leftLeg.localRotation = Quaternion.Euler(0, swing, 0) * _leftLegStartRotation;
-                _rightLeg.localRotation = Quaternion.Euler(0, swing * 0.7f, 0) * _rightLegStartRotation;
+                _leftLeg.DOLocalMoveZ(_startPosLeft.z + 0.17f, 0.2f)
+    .SetLoops(-1, LoopType.Yoyo)
+    .SetEase(Ease.InOutSine)
+                    .OnStepComplete(() =>
+                    {
+                        AudioEffect();
+                    });
 
-                _swingPhase += 15f * Time.deltaTime;
+
+                _rightLeg.DOLocalMoveZ(_startPosRight.z + 0.17f, 0.2f)
+     .SetLoops(-1, LoopType.Yoyo)
+     .SetEase(Ease.InOutSine)
+                     .OnStepComplete(() =>
+                     {
+                         AudioEffect();
+                     })
+                     .SetDelay(0.25f);
             }
             else
             {
-                _leftLeg.localRotation = Quaternion.Slerp(_leftLeg.localRotation, _leftLegStartRotation, 5f * Time.deltaTime);
-                _rightLeg.localRotation = Quaternion.Slerp(_rightLeg.localRotation, _rightLegStartRotation, 5f * Time.deltaTime);
-                _swingPhase = 0f;
+                DOTween.Kill(_leftLeg);
+                DOTween.Kill(_rightLeg);
+
+                _leftLeg.DOLocalMoveZ(_startPosLeft.z, 0.2f);
+                _rightLeg.DOLocalMoveZ(_startPosRight.z, 0.2f);
             }
         }
-
-
 
         private void FixedUpdate()
         {
@@ -97,6 +134,8 @@ namespace WekenDev.Player.Controller
 
                 // Горизонтальная сила - отдельно
                 _mainBody.AddForce(moveDir * _speed * 100f, ForceMode.Force);
+
+                if (IsGrounded()) _mainBody.AddForce(Vector3.up * 15f, ForceMode.Impulse);
             }
             else
             {
@@ -106,7 +145,8 @@ namespace WekenDev.Player.Controller
             // Прыжок
             if (_jumpInput && IsGrounded())
             {
-                // 2. Применяем ТОЛЬКО вертикальную силу (Impulse для мгновенного толчка)
+                PlayJumpAnimationClientRpc();
+
                 _mainBody.AddForce(Vector3.up * _jumpForce * 100f, ForceMode.Impulse);
 
                 Vector3 horizontalVel = new Vector3(_mainBody.linearVelocity.x, 0, _mainBody.linearVelocity.z);
@@ -115,12 +155,33 @@ namespace WekenDev.Player.Controller
                 _jumpInput = false;
             }
         }
+        [ClientRpc]
+        private void PlayJumpAnimationClientRpc()
+        {
+            DOTween.Kill(_leftLeg);
+            DOTween.Kill(_rightLeg);
+
+            _audioSource.PlayOneShot(_jumpClip);
+
+            Sequence jumpSequence = DOTween.Sequence();
+            jumpSequence
+                .Append(_leftLeg.DOLocalMoveZ(_startPosLeft.z - 0.3f, 0.1f).SetEase(Ease.OutQuad))
+                .Join(_rightLeg.DOLocalMoveZ(_startPosRight.z - 0.3f, 0.1f).SetEase(Ease.OutQuad))
+                .Append(_leftLeg.DOLocalMoveZ(_startPosLeft.z + 0.2f, 0.2f).SetEase(Ease.InOutSine))
+                .Join(_rightLeg.DOLocalMoveZ(_startPosRight.z + 0.2f, 0.2f).SetEase(Ease.InOutSine))
+                .Append(_leftLeg.DOLocalMoveZ(_startPosLeft.z, 0.15f).SetEase(Ease.OutBack))
+                .Join(_rightLeg.DOLocalMoveZ(_startPosRight.z, 0.15f).SetEase(Ease.OutBack))
+                .OnComplete(() =>
+                {
+                    if (_netMove.Value) StartWalkAnimation();
+                });
+        }
 
         private bool IsGrounded()
         {
             Vector3 start = _feetsPos.position;
-            float _groundCheckRadius = 0.1f;
-            float _groundCheckHeight = 0.48f;
+            float _groundCheckRadius = 0.2f;
+            float _groundCheckHeight = 0.6f;
             Vector3 end = start + Vector3.up * _groundCheckHeight;
 
             return Physics.CheckCapsule(start, end, _groundCheckRadius, _groundLayer);

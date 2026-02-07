@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: 22_Builder's_Vest
   m_EditorClassIdentifier: Assembly-CSharp::ClothScriptableObject
   id: 22
-  mesh: {fileID: 5113563861466835298, guid: 02fe0c6c6e2112c4e967d69291a5eb7b, type: 3}
+  mesh: {fileID: 5113563861466835298, guid: 28e31f17a66a3ad45ba2ec82eb26549a, type: 3}
   icon: {fileID: 1080138265, guid: 0fa109b34ec072f43852078ec1e3951c, type: 3}
   type: 1

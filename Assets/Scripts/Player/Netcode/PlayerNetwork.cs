@@ -47,6 +47,7 @@ namespace WekenDev.Player
             _clothPlayer = GetComponent<ChangeClothPlayer>();
             _colorPlayer = GetComponent<ChangeColorPlayer>();
             
+            _playerController.Init();
             _colorPlayer.Init();
             _clothPlayer.Init();
             if (!IsOwner)

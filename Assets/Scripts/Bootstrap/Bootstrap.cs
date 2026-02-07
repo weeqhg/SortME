@@ -12,6 +12,7 @@ public class Bootstrap : MonoBehaviour
     [Header("Основные объекты")]
     [SerializeField] private GameObject _directionalLight;
     [SerializeField] private GameObject _spawnPrefab;
+    [SerializeField] private GameObject _storagePrefab;
 
     [Header("Интерфейс")]
     [SerializeField] private GameObject _mainMenuCanvas;
@@ -43,6 +44,8 @@ public class Bootstrap : MonoBehaviour
     private ICustomizationMenu _customInterface;
 
     private GlobalScoreRating _globalScoreRating;
+
+    private StorageManager _storageManager;
     private void Start()
     {
         CreateObject();
@@ -78,6 +81,9 @@ public class Bootstrap : MonoBehaviour
 
         if (_audioManagerPrefab != null) _audioManagerPrefab = Instantiate(_audioManagerPrefab);
         else Debug.LogWarning("Внимание модуль AudioManager не установлен");
+
+        if (_storagePrefab != null) _storagePrefab = Instantiate(_storagePrefab);
+        else Debug.LogWarning("Внимание модуль Storage не установлен");
     }
 
 
@@ -103,12 +109,14 @@ public class Bootstrap : MonoBehaviour
         if (_gameManager != null) _gameManagerInterface = _gameManager.GetComponent<IGameManager>();
 
         if (_globalScorePrefab != null) _globalScoreRating = _globalScorePrefab.GetComponentInChildren<GlobalScoreRating>();
+
+        if (_storagePrefab != null) _storageManager = _storagePrefab.GetComponentInChildren<StorageManager>();
     }
 
     private void StartInitialized()
     {
         Recorder.Instance?.Init();
-        
+
         AudioManager.Instance?.Init();
 
         _settingManager?.Init();
@@ -128,6 +136,8 @@ public class Bootstrap : MonoBehaviour
         _сustomizationManager?.Init(_mainMenu, _gameManagerInterface);
 
         _globalScoreRating?.Init(_gameManagerInterface);
+
+        _storageManager?.Init();
 
     }
 
