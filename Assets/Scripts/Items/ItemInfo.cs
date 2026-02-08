@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Localization.Components;
 
 public enum ItemState
 {
@@ -9,7 +10,7 @@ public enum ItemState
 }
 public class ItemInfo : MonoBehaviour
 {
-    public int id;
+    public string nameKeyItem;
     public Sprite icon;
     public ItemState state;
 }

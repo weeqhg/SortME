@@ -4,7 +4,6 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Localization.Components;
 using UnityEngine.InputSystem;
-using WekenDev.InputSystem;
 using DG.Tweening;
 
 public class GlobalScoreRating : MonoBehaviour
