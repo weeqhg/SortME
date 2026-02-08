@@ -21,6 +21,9 @@ public class DamageableItem : NetworkBehaviour
     [Header("Предметы")]
     [SerializeField] private ItemType _itemType;
 
+    private float _currentDurabilyItem = 100f;
+    private float _currentDurabilyBox = 100f;
+
     private ItemScriptableObject[] _items;
     private Mesh _cartonBox;
     private Color _originalColor = Color.white;
@@ -32,6 +35,9 @@ public class DamageableItem : NetworkBehaviour
     private ItemInfo _itemInfo;
     private NetworkVariable<float> _netDurability = new NetworkVariable<float>(100f);
     private bool _isBox = true;
+    private bool _isUnpack = false;
+    private Mesh _currentMesh;
+    public bool IsBox() => _isBox;
 
     void Start()
     {
@@ -77,7 +83,7 @@ public class DamageableItem : NetworkBehaviour
 
     private void OnDurabilityChanged(float oldValue, float newValue)
     {
-        _itemMaterial.SetFloat("_Durability", _netDurability.Value / 100f);
+        _itemMaterial.SetFloat("_Durability", newValue / 100f);
 
         PlayDamageAnimation();
 
@@ -86,6 +92,8 @@ public class DamageableItem : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (!IsServer) return;
+
         if (collision.gameObject.CompareTag("Player"))
         {
             return;
@@ -96,12 +104,26 @@ public class DamageableItem : NetworkBehaviour
         if (force > 5f)
         {
             float damage = force * 2f;
-            _netDurability.Value -= damage;
+            if (_isBox)
+            {
+                _currentDurabilyBox -= damage;
+                Damage(_currentDurabilyBox);
+            }
+            else
+            {
+                _currentDurabilyItem -= damage;
+                Damage(_currentDurabilyItem);
+            }
         }
+
+    }
+
+    private void Damage(float value)
+    {
+        _netDurability.Value -= value;
 
         if (_netDurability.Value <= 0)
         {
-            _netDurability.Value = 100f;
             if (_items.Length > 0)
             {
                 if (_isBox == true)
@@ -119,8 +141,10 @@ public class DamageableItem : NetworkBehaviour
     public void UnpacItem()
     {
         if (!IsServer) return;
+        
         if (_isBox == true)
         {
+            _netDurability.Value = _currentDurabilyItem;
             int index = Random.Range(0, _items.Length);
             UnpackItemClientRpc(index);
             _isBox = false;
@@ -131,17 +155,29 @@ public class DamageableItem : NetworkBehaviour
     private void UnpackItemClientRpc(int index)
     {
         _itemMaterial.SetFloat("_Durability", 1f);
-        _meshFilter.mesh = _items[index].mesh;
-        _itemInfo.nameKeyItem = _items[index].nameKeyItem;
-        _itemInfo.icon = _items[index].icon;
+
+        if (_isUnpack == false)
+        {
+            _currentMesh = _items[index].mesh;
+            _itemInfo.nameKeyItem = _items[index].nameKeyItem;
+            _itemInfo.icon = _items[index].icon;
+
+            _isUnpack = true;
+        }
+
+        _meshFilter.mesh = _currentMesh;
         EffectUnpack();
     }
 
-    [ClientRpc]
-    private void PackItemClientRpc()
+
+    public void PackItem()
     {
-        _itemMaterial.SetFloat("_Durability", 1f);
+        _currentDurabilyBox = 100f;
+        _netDurability.Value = _currentDurabilyBox;
+
+        _itemMaterial.SetFloat("_Durability", _currentDurabilyBox / 100f);
         _meshFilter.mesh = _cartonBox;
+        _isBox = true;
     }
 
     #region Animation Unpack

@@ -52,17 +52,20 @@ namespace WekenDev.AudioManagerGame
         {
             if (_musicAudio.clip != null)
             {
-                float fadeDuration = 1f;
+                float fadeDuration = 3f; // Увеличь длительность
                 float startVolume = _musicAudio.volume;
 
-                for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+                // Плавное затухание
+                while (_musicAudio.volume > 0)
                 {
-                    _musicAudio.volume = Mathf.Lerp(startVolume, 0, t / fadeDuration);
+                    _musicAudio.volume -= Time.deltaTime / fadeDuration;
                     yield return null;
                 }
 
                 _musicAudio.Stop();
                 _musicAudio.volume = startVolume;
+
+                yield return new WaitForSeconds(0.5f); // Пауза перед следующим
             }
 
             StartPlayMusic();

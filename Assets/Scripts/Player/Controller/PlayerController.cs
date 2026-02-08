@@ -16,8 +16,6 @@ namespace WekenDev.Player.Controller
         [SerializeField] private Transform _feetsPos;
         [SerializeField] private Transform _leftLeg;
         [SerializeField] private Transform _rightLeg;
-        private float _swingAmount = 90f;
-        private float _stepSpeed = 15f;
 
         [Header("Movement")]
         [SerializeField] private float _speed = 5f;
@@ -27,8 +25,6 @@ namespace WekenDev.Player.Controller
         [Header("Jump")]
         [SerializeField] private float _jumpForce = 5f;
         [SerializeField] private LayerMask _groundLayer = ~0;
-        //Анимация ног
-        private float _swingPhase = 0f; // Фаза для синусоиды
 
         // Запоминаем начальное вращение ног
         private Vector3 _startPosLeft;

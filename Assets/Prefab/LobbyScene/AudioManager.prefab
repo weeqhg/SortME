@@ -97,6 +97,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 57e679a258d96874aaf304bcaa2db43b, type: 3}
   - {fileID: 8300000, guid: e07bc9d2c50b976428d140699423a483, type: 3}
   - {fileID: 8300000, guid: 231b8d4d78e0ba84a96e10dbd2c52ec9, type: 3}
+  - {fileID: 8300000, guid: ae2bbd4672ba6da4d8129f02854e946e, type: 3}
   - {fileID: 8300000, guid: 282228a20d0e3c7489ff115a65504945, type: 3}
   _musicIntense: []
 --- !u!82 &6722753179902398320
