@@ -6,18 +6,18 @@ using UnityEngine.Localization.Components;
 using UnityEngine.InputSystem;
 using DG.Tweening;
 
-public class GlobalScoreRating : MonoBehaviour
+public interface IGlobalScoreRating
+{
+    void Show();
+    void Hide();
+}
+
+public class GlobalScoreRating : MonoBehaviour, IGlobalScoreRating
 {
     [SerializeField] private string _url = "https://score-tracker--nikkhripunov.replit.app/api/score";
     [SerializeField] private LocalizeStringEvent _scoreText;
     [SerializeField] private Image _positivScore;
     [SerializeField] private Image _negativScore;
-    [SerializeField] private CanvasGroup _scoreUI;
-
-    private IGameManager _gameManager;
-
-    private InputAction _actionPlayer;
-    private InputAction _actionUI;
 
     private Coroutine _updateCoroutine;
     private float _updateInterval = 3f;
@@ -44,48 +44,19 @@ public class GlobalScoreRating : MonoBehaviour
     private Tween _scoreTween;
     private Tween _positiveSliderTween;
     private Tween _negativeSliderTween;
-    public void Init(IGameManager gameManager)
-    {
-        _gameManager = gameManager;
 
-        HandleNewGameState();
-
-        if (_gameManager != null) _gameManager.OnChangeNewGameState += HandleNewGameState;
-    }
-
-    private void HandleNewGameState()
-    {
-        if (_gameManager == null ||
-           _gameManager?.GetCurrentState() == GameState.MainMenu ||
-           _gameManager?.GetCurrentState() == GameState.Paused)
-        {
-            Show();
-        }
-        else
-        {
-            Hide();
-        }
-    }
-
-    private void Hide()
-    {
-        _scoreUI.alpha = 0f;
-        _scoreUI.interactable = false;
-        _scoreUI.blocksRaycasts = false;
-
-        StopScoreUpdates();
-    }
-
-    private void Show()
+    public void Show()
     {
         StartCoroutine(FetchScore());
 
         StartScoreUpdates();
-
-        _scoreUI.alpha = 1f;
-        _scoreUI.interactable = true;
-        _scoreUI.blocksRaycasts = true;
     }
+
+    public void Hide()
+    {
+        StopScoreUpdates();
+    }
+
 
     private void StartScoreUpdates()
     {
@@ -351,8 +322,6 @@ public class GlobalScoreRating : MonoBehaviour
         DOTween.Kill(_scoreText?.transform);
         DOTween.Kill(_positivScore);
         DOTween.Kill(_negativScore);
-
-        if (_gameManager != null) _gameManager.OnChangeNewGameState -= HandleNewGameState;
     }
 }
 

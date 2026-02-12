@@ -19,7 +19,6 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private GameObject _settingMenuCanvas;
     [SerializeField] private GameObject _gameMenuCanvas;
     [SerializeField] private GameObject _customizationPrefab;
-    [SerializeField] private GameObject _globalScorePrefab;
     [SerializeField] private GameObject _audioManagerPrefab;
 
     //Нужные менеджеры будем объявлять отсюда или сразу создаваться
@@ -76,14 +75,11 @@ public class Bootstrap : MonoBehaviour
         if (_customizationPrefab != null) _customizationPrefab = Instantiate(_customizationPrefab);
         else Debug.LogWarning("Внимание модуль Customization не установлен");
 
-        if (_globalScorePrefab != null) _globalScorePrefab = Instantiate(_globalScorePrefab);
-        else Debug.LogWarning("Внимание модуль GlobalScore не установлен");
-
         if (_audioManagerPrefab != null) _audioManagerPrefab = Instantiate(_audioManagerPrefab);
         else Debug.LogWarning("Внимание модуль AudioManager не установлен");
 
-        if (_storagePrefab != null) _storagePrefab = Instantiate(_storagePrefab);
-        else Debug.LogWarning("Внимание модуль Storage не установлен");
+        //if (_storagePrefab != null) _storagePrefab = Instantiate(_storagePrefab);
+        //else Debug.LogWarning("Внимание модуль Storage не установлен");
     }
 
 
@@ -107,8 +103,6 @@ public class Bootstrap : MonoBehaviour
         if (_customizationPrefab != null) _customInterface = _customizationPrefab.GetComponent<ICustomizationMenu>();
 
         if (_gameManager != null) _gameManagerInterface = _gameManager.GetComponent<IGameManager>();
-
-        if (_globalScorePrefab != null) _globalScoreRating = _globalScorePrefab.GetComponentInChildren<GlobalScoreRating>();
 
         if (_storagePrefab != null) _storageManager = _storagePrefab.GetComponentInChildren<StorageManager>();
     }
@@ -134,8 +128,6 @@ public class Bootstrap : MonoBehaviour
         _gameLobby?.Init(_gameMenu, _settings, _mainMenu, _gameManagerInterface);
 
         _сustomizationManager?.Init(_mainMenu, _gameManagerInterface);
-
-        _globalScoreRating?.Init(_gameManagerInterface);
 
         _storageManager?.Init();
 

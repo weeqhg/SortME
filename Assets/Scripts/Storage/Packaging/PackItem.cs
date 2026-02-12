@@ -17,13 +17,14 @@ public class PackItem : MonoBehaviour
     {
         if (other.CompareTag("Item"))
         {
-            DamageableItem damageableItem = other.GetComponent<DamageableItem>();
-            if (damageableItem != null)
+            ItemInfo itemInfo = other.GetComponent<ItemInfo>();
+            DurabilityItem durabilityItem = other.GetComponent<DurabilityItem>();
+            if (itemInfo != null && durabilityItem != null)
             {
-                //if (!damageableItem.IsBox())
+                if (!itemInfo.IsBox)
                 {
                     PressAnimation();
-                    damageableItem.PackItem();
+                    durabilityItem.PackItem();
                 }
             }
         }

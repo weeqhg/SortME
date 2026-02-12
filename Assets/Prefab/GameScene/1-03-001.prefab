@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 937412162932238121}
   m_Layer: 2
   m_Name: 1-03-001
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -185,7 +185,7 @@ MonoBehaviour:
   _rackManager: {fileID: 0}
   _id: 1-01-001
   spawnPos: {fileID: 7718289249996046872}
-  _item: {fileID: 0}
+  _itemInfo: {fileID: 0}
 --- !u!65 &937412162932238121
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -19,9 +19,13 @@ namespace WekenDev.MainMenu
         private InputAction _actionEscape;
         private MainMenuUI _menuUI;
         private AuthorUI _authorUI;
-
+        private IGlobalScoreRating _globalRating;
         public void Init(ISettings settings, ICustomizationMenu custom, IGameManager gameManager)
         {
+
+            _globalRating = GetComponentInChildren<IGlobalScoreRating>();
+            _globalRating?.Show();
+            
             _settings = settings;
             if (_settings != null) _settings.OnClosed += Show;
             _customMenu = custom;
@@ -35,7 +39,7 @@ namespace WekenDev.MainMenu
             _actionEscape = InputManager.Instance.Actions.UI.Cancel;
             if (_actionEscape != null) _actionEscape.started += HandleEscapeKey;
             _authorUI = GetComponentInChildren<AuthorUI>();
-            
+
             if (_authorUI != null) _authorUI.Init(this);
 
             _menuUI = GetComponent<MainMenuUI>();
@@ -54,19 +58,20 @@ namespace WekenDev.MainMenu
                 if (_camera != null && !_camera.activeSelf) _camera.SetActive(true);
 
                 _menuUI.ShowMainMenu();
+                _globalRating?.Show();
             }
         }
 
         public void Hide()
         {
             if (_camera != null) _camera.SetActive(false);
+            _globalRating?.Hide();
         }
 
         private void HandleEscapeKey(InputAction.CallbackContext context)
         {
             if (_gameManager == null || _gameManager?.GetCurrentState() == GameState.MainMenu)
             {
-                AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
                 Show();
             }
 

@@ -54,6 +54,22 @@ MonoBehaviour:
     m_Localized: Enter lobby name...
     m_Metadata:
       m_Items: []
+  - m_Id: 12685712340402176
+    m_Localized: Color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12685932897878016
+    m_Localized: Accessories
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12686127878488064
+    m_Localized: Clothes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12693788963487744
+    m_Localized: Custom
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

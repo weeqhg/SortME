@@ -34,7 +34,6 @@
   <Project Path="Unity.VisualScripting.Flow.Editor.csproj" />
   <Project Path="Unity.Animation.Rigging.csproj" />
   <Project Path="Unity.Netcode.Runtime.csproj" />
-  <Project Path="FastScriptReload.Editor.csproj" />
   <Project Path="Unity.Recorder.Editor.csproj" />
   <Project Path="Cinemachine.csproj" />
   <Project Path="Unity.Services.Authentication.csproj" />
@@ -42,6 +41,7 @@
   <Project Path="Unity.VisualStudio.Editor.csproj" />
   <Project Path="PPv2URPConverters.csproj" />
   <Project Path="Unity.Services.QoS.csproj" />
+  <Project Path="FastScriptReload.Editor.csproj" />
   <Project Path="Unity.Services.Authentication.Editor.csproj" />
   <Project Path="Unity.Searcher.Editor.csproj" />
   <Project Path="Unity.Multiplayer.Tools.MetricTypes.csproj" />
@@ -125,13 +125,13 @@
   <Project Path="Unity.ShaderGraph.Utilities.csproj" />
   <Project Path="Unity.VisualScripting.Shared.Editor.csproj" />
   <Project Path="Unity.Recorder.Base.csproj" />
-  <Project Path="FastScriptReload.Runtime.csproj" />
   <Project Path="com.unity.multiplayer.tools.window.csproj" />
   <Project Path="Unity.Profiling.Core.csproj" />
   <Project Path="ParrelSync.csproj" />
   <Project Path="Unity.Services.Core.Device.csproj" />
   <Project Path="Unity.Services.Core.Analytics.csproj" />
   <Project Path="Unity.Multiplayer.Tools.MetricEvents.csproj" />
+  <Project Path="FastScriptReload.Runtime.csproj" />
   <Project Path="Unity.RenderPipeline.Universal.ShaderLibrary.csproj" />
   <Project Path="Unity.Services.Authentication.Editor.Shared.csproj" />
   <Project Path="Unity.Bindings.OpenImageIO.Editor.csproj" />

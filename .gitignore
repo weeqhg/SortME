@@ -97,3 +97,18 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Lightmaps - сами файлы
+Assets/**/Lightmap-*.exr
+Assets/**/Lightmap-*.png
+Assets/**/ReflectionProbe-*.exr
+
+# Meta файлы lightmap
+Assets/**/Lightmap-*.exr.meta
+Assets/**/Lightmap-*.png.meta
+Assets/**/ReflectionProbe-*.exr.meta
+
+# Видео
+Assets/**/*.mp4
+Assets/**/*.avi
+Assets/**/*.mov

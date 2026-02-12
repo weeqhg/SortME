@@ -51,6 +51,22 @@ MonoBehaviour:
     m_Key: enterLobbyName
     m_Metadata:
       m_Items: []
+  - m_Id: 12685712340402176
+    m_Key: color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12685932897878016
+    m_Key: accessories
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12686127878488064
+    m_Key: clothes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12693788963487744
+    m_Key: "\u0441ustom"
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -15,3 +15,4 @@ MonoBehaviour:
   nameKeyItem: "\u0441hair"
   icon: {fileID: 1915042856, guid: 1475446324f2de340a793e4ba4952f56, type: 3}
   mesh: {fileID: -6264831526926562434, guid: 3582cb553f8ae51409da21a70bf32247, type: 3}
+  texture: {fileID: 2800000, guid: ee0687bc79f97af4bb62402ac607e002, type: 3}

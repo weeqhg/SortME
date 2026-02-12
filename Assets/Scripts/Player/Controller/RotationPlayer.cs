@@ -7,7 +7,8 @@ namespace WekenDev.Player.Controller
     {
         [Header("References")]
         [SerializeField] private Transform _cameraPivot;
-        [SerializeField] private Rigidbody _body; // Самый важный Rigidbody для вращения
+        [SerializeField] private Rigidbody _body;
+        private float _heightOffset = 0.5f;
         private float _radius = 1f;
         private float _playerTurnSpeed = 100f;
         private float _maxRotationAngle = 45f;
@@ -54,9 +55,8 @@ namespace WekenDev.Player.Controller
             // Создаем вращение из углов
             Quaternion orbitRotation = Quaternion.Euler(_pitch, _yaw, 0f);
 
-            // Позиция камеры на орбите
-            Vector3 orbitPosition = _body.transform.position +
-                                   orbitRotation * Vector3.back * _radius;
+            Vector3 orbitCenter = _body.transform.position + Vector3.up * _heightOffset;
+            Vector3 orbitPosition = orbitCenter + orbitRotation * Vector3.back * _radius;
 
             // Устанавливаем позицию
             _cameraPivot.position = orbitPosition;
@@ -66,5 +66,26 @@ namespace WekenDev.Player.Controller
             Vector3 lookDirection = (_cameraPivot.position - _body.transform.position).normalized;
             _cameraPivot.rotation = Quaternion.LookRotation(lookDirection);
         }
+
+        private void OnDrawGizmos()
+        {
+            if (_body == null) return;
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(_body.transform.position, _radius);
+
+            // Центр орбиты
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(_body.transform.position, 0.1f);
+
+            // Линия к камере
+            if (_cameraPivot != null)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawLine(_body.transform.position, _cameraPivot.position);
+            }
+        }
     }
+
+
 }

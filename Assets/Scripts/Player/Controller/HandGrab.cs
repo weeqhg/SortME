@@ -9,7 +9,7 @@ namespace WekenDev.Player.Controller
         [Header("Настройки игрока")]
         [SerializeField] private Transform _cameraPivot;
         [Header("Синхронизация с прыжком")]
-        [SerializeField] private Rigidbody _playerBody; // Ссылка на тело игрока
+        [SerializeField] private Rigidbody _playerBody;
         [SerializeField] private Rigidbody _handRb;
         [Header("Настройки")]
         [SerializeField] private LayerMask _grabLayer = ~0;
@@ -28,6 +28,7 @@ namespace WekenDev.Player.Controller
         private float _lastCheckTime;
         private ConfigurableJoint _bodyJoint;
         private GameObject _anchorObject;
+        private FixedJoint _fixedJoint;
         private bool _isUp = false;
         public void ToggleUp(bool enable)
         {
@@ -40,46 +41,20 @@ namespace WekenDev.Player.Controller
 
             if (_isAttached || _isGrabbing) return;
 
-            TryGrabStatic();
-
             TryGrabDynamic();
+
+            TryGrabStatic();
         }
 
         private void FixedUpdate()
         {
             if (!IsServer) return;
 
-            if (_isGrabbing)
-            {
-                UpdateGrabbedObject();
-            }
-            else if (_isAttached)
+
+            if (_isAttached)
             {
                 UpdateAttachedPosition();
             }
-        }
-
-        private void UpdateGrabbedObject()
-        {
-            if (_objectRb == null) return;
-
-            Vector3 targetPos = transform.position;
-            Vector3 currentPos = _objectRb.position;
-            Vector3 forceDirection = targetPos - currentPos;
-            float distance = forceDirection.magnitude;
-
-            if (distance > _maxDistance)
-            {
-                ReleaseObject();
-                _myControllerHands.ReleasePlayer();
-                return;
-            }
-
-            float baseForce = distance * _grabForce * _objectRb.mass / 2f;
-
-            _objectRb.AddForce(forceDirection.normalized * baseForce, ForceMode.Force);
-
-            _objectRb.angularVelocity *= 0.1f;
         }
 
         private void UpdateAttachedPosition()
@@ -227,25 +202,33 @@ namespace WekenDev.Player.Controller
             {
                 if (col.transform.IsChildOf(_playerBody.transform)) continue;
                 if (_isUp && col.CompareTag("Player")) continue;
+
                 Rigidbody rb = col.GetComponent<Rigidbody>();
                 if (rb != null && !rb.isKinematic)
                 {
-
-                    _objectRb = rb;
-
-                    if (_objectRb.CompareTag("Player"))
+                    if (col.CompareTag("Player"))
                     {
-                        ControllerHands controllerHands = _objectRb.GetComponentInParent<ControllerHands>();
+                        ControllerHands controllerHands = rb.GetComponentInParent<ControllerHands>();
                         controllerHands.OnUp();
                         _myControllerHands.otherHands = controllerHands;
                     }
-                    _isGrabbing = true;
 
+                    CreateDynamicAnchor(rb);
+
+                    _isGrabbing = true;
                     return;
                 }
             }
         }
 
+        private void CreateDynamicAnchor(Rigidbody targetRb)
+        {
+            // Добавляем FixedJoint к объекту
+            _fixedJoint = targetRb.gameObject.AddComponent<FixedJoint>();
+            _fixedJoint.connectedBody = _handRb;
+            _fixedJoint.enableCollision = false;
+            _fixedJoint.breakForce = 1000f;
+        }
 
         public void ReleaseObject()
         {
@@ -254,7 +237,8 @@ namespace WekenDev.Player.Controller
 
             if (_isGrabbing)
             {
-                _objectRb = null;
+                if (_fixedJoint != null) Destroy(_fixedJoint);
+
                 _isGrabbing = false;
             }
             else if (_isAttached)

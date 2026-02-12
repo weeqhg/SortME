@@ -7,8 +7,10 @@ public enum ItemType
     Box1x1,
     Box1x2
 }
+
+
 [RequireComponent(typeof(Rigidbody))]
-public class DamageableItem : NetworkBehaviour
+public class DurabilityItem : NetworkBehaviour
 {
     [Header("Звуки")]
     [SerializeField] private AudioClip[] _clipsDrop;
@@ -21,37 +23,41 @@ public class DamageableItem : NetworkBehaviour
     [Header("Предметы")]
     [SerializeField] private ItemType _itemType;
 
-    private float _currentDurabilyItem = 100f;
-    private float _currentDurabilyBox = 100f;
+    [SerializeField] private int _currentDurabilyItem = 100;
+    [SerializeField] private int _currentDurabilyBox = 100;
 
     private ItemScriptableObject[] _items;
     private Mesh _cartonBox;
-    private Color _originalColor = Color.white;
+    private Color _originalColor = Color.black;
     private Vector3 _originalScale;
     private Material _itemMaterial;
     private MeshFilter _meshFilter;
     private ParticleSystem _particalSystem;
     private Sequence _damageSequence;
     private ItemInfo _itemInfo;
-    private NetworkVariable<float> _netDurability = new NetworkVariable<float>(100f);
-    private bool _isBox = true;
+    private NetworkVariable<int> _netDurability = new NetworkVariable<int>(100);
     private bool _isUnpack = false;
     private Mesh _currentMesh;
-    public bool IsBox() => _isBox;
+    private Texture _currentTexture;
+    private MeshRenderer _meshRenderer;
+    private MaterialPropertyBlock _propertyBlock;
 
     void Start()
     {
         _audioSource = GetComponentInChildren<AudioSource>();
         _itemInfo = GetComponent<ItemInfo>();
-        MeshRenderer renderer = GetComponent<MeshRenderer>();
         _particalSystem = GetComponentInChildren<ParticleSystem>();
         _meshFilter = GetComponent<MeshFilter>();
         _cartonBox = _meshFilter.mesh;
 
-        if (renderer != null)
+        _meshRenderer = GetComponent<MeshRenderer>(); // ← добавить
+
+        _propertyBlock = new MaterialPropertyBlock();
+
+        if (_meshRenderer != null)
         {
-            _itemMaterial = renderer.material;
-            _originalColor = Color.white;
+            _itemMaterial = _meshRenderer.material;
+            _originalColor = Color.black;
         }
         _originalScale = transform.localScale;
 
@@ -81,9 +87,9 @@ public class DamageableItem : NetworkBehaviour
         _netDurability.OnValueChanged += OnDurabilityChanged;
     }
 
-    private void OnDurabilityChanged(float oldValue, float newValue)
+    private void OnDurabilityChanged(int oldValue, int newValue)
     {
-        _itemMaterial.SetFloat("_Durability", newValue / 100f);
+        _itemMaterial.SetFloat("_Durability", newValue);
 
         PlayDamageAnimation();
 
@@ -103,8 +109,8 @@ public class DamageableItem : NetworkBehaviour
 
         if (force > 5f)
         {
-            float damage = force * 2f;
-            if (_isBox)
+            int damage = (int)force * 2;
+            if (_itemInfo.IsBox)
             {
                 _currentDurabilyBox -= damage;
                 Damage(_currentDurabilyBox);
@@ -118,15 +124,15 @@ public class DamageableItem : NetworkBehaviour
 
     }
 
-    private void Damage(float value)
+    private void Damage(int value)
     {
-        _netDurability.Value -= value;
+        _netDurability.Value = value;
 
         if (_netDurability.Value <= 0)
         {
             if (_items.Length > 0)
             {
-                if (_isBox == true)
+                if (_itemInfo.IsBox == true)
                 {
                     UnpacItem();
                 }
@@ -141,20 +147,20 @@ public class DamageableItem : NetworkBehaviour
     public void UnpacItem()
     {
         if (!IsServer) return;
-        
-        if (_isBox == true)
+
+        if (_itemInfo.IsBox == true)
         {
             _netDurability.Value = _currentDurabilyItem;
             int index = Random.Range(0, _items.Length);
             UnpackItemClientRpc(index);
-            _isBox = false;
+            _itemInfo.ChangeBoxState(false);
         }
     }
 
     [ClientRpc]
     private void UnpackItemClientRpc(int index)
     {
-        _itemMaterial.SetFloat("_Durability", 1f);
+        _itemMaterial.SetFloat("_Durability", 100);
 
         if (_isUnpack == false)
         {
@@ -162,9 +168,16 @@ public class DamageableItem : NetworkBehaviour
             _itemInfo.nameKeyItem = _items[index].nameKeyItem;
             _itemInfo.icon = _items[index].icon;
 
+            if (_items[index].texture != null)
+            {
+                _currentTexture = _items[index].texture;
+            }
+
             _isUnpack = true;
         }
 
+        _propertyBlock.SetTexture("_BaseTexture", _currentTexture);
+        _meshRenderer.SetPropertyBlock(_propertyBlock);
         _meshFilter.mesh = _currentMesh;
         EffectUnpack();
     }
@@ -172,12 +185,17 @@ public class DamageableItem : NetworkBehaviour
 
     public void PackItem()
     {
-        _currentDurabilyBox = 100f;
+        _currentDurabilyBox = 100;
         _netDurability.Value = _currentDurabilyBox;
 
-        _itemMaterial.SetFloat("_Durability", _currentDurabilyBox / 100f);
+        _itemMaterial.SetFloat("_Durability", _currentDurabilyBox);
         _meshFilter.mesh = _cartonBox;
-        _isBox = true;
+
+        // Сброс текстуры на дефолтную коробки
+        _propertyBlock.Clear();
+        _meshRenderer.SetPropertyBlock(_propertyBlock);
+
+        _itemInfo.ChangeBoxState(true);
     }
 
     #region Animation Unpack
@@ -196,17 +214,14 @@ public class DamageableItem : NetworkBehaviour
         {
             _audioSource.PlayOneShot(_clipsDrop[Random.Range(0, _clipsDrop.Length)]);
         }
-        // Останавливаем предыдущую анимацию
         StopDamageAnimation();
 
-        // Создаем новую последовательность
         _damageSequence = DOTween.Sequence();
 
-        // 1. Анимация цвета
         if (_itemMaterial != null)
         {
             _damageSequence.Append(_itemMaterial.DOColor(Color.red, "_BaseColor", damageAnimationDuration * 0.5f));
-            _damageSequence.Append(_itemMaterial.DOColor(Color.white, "_BaseColor", damageAnimationDuration * 0.5f));
+            _damageSequence.Append(_itemMaterial.DOColor(Color.black, "_BaseColor", damageAnimationDuration * 0.5f));
         }
 
         _damageSequence.Insert(0, transform.DOPunchScale(

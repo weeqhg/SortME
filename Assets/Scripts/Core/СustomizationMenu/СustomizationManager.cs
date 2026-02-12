@@ -16,7 +16,7 @@ namespace WekenDev.СustomizationMenu
         private InputAction _actionEscape;
         private СustomizationUI _customUI;
         private IMainMenu _mainMenu;
-        private IGameManager _gameManager;
+        //private IGameManager _gameManager;
         [SerializeField] private CustomizationCamera _cameraController;
         private HSVColorWheel _hsvColor;
 
@@ -26,7 +26,7 @@ namespace WekenDev.СustomizationMenu
             _camera = GetComponentInChildren<Camera>().gameObject;
             if (_camera != null) _camera.SetActive(false);
 
-            _gameManager = gameManager;
+            //_gameManager = gameManager;
 
             _customUI = GetComponent<СustomizationUI>();
             _customUI.Init();
@@ -47,16 +47,12 @@ namespace WekenDev.СustomizationMenu
 
         public void Show()
         {
-            if (_gameManager != null) _gameManager.SwitchCurrentState(GameState.Customize);
-
             if (_camera != null) _camera.SetActive(true);
 
             _customUI.Show();
         }
         public void Hide()
         {
-            if (_gameManager != null) _gameManager.SwitchCurrentState(GameState.MainMenu);
-
             if (_camera != null) _camera.SetActive(false);
             
             _customUI.Hide();

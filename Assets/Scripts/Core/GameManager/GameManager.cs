@@ -16,7 +16,7 @@ public interface IGameManager
     event Action OnChangeNewGameState;
 }
 
-public enum GameState { MainMenu, Playing, Paused, Customize }
+public enum GameState { MainMenu, Playing, Paused }
 
 namespace WekenDev.Game
 {
@@ -63,10 +63,6 @@ namespace WekenDev.Game
 
                 case GameState.Paused:
                     _currentState = GameState.Paused;
-                    InputManager.Instance.ChangeInputType(InputType.UI);
-                    break;
-                case GameState.Customize:
-                    _currentState = GameState.Customize;
                     InputManager.Instance.ChangeInputType(InputType.UI);
                     break;
             }

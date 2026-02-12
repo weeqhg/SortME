@@ -5,6 +5,7 @@ using WekenDev.Settings.Graphic;
 using WekenDev.InputSystem;
 using UnityEngine.InputSystem;
 using System;
+using WekenDev.Game;
 
 public interface ISettings
 {
@@ -38,7 +39,7 @@ namespace WekenDev.Settings
 
         private InputAction _actionEscape;
         private SettingUI _settingUI;
-
+        
         public void Init()
         {
             _settingUI = GetComponent<SettingUI>();

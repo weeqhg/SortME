@@ -30,6 +30,10 @@ MonoBehaviour:
     m_Localized: Chair
     m_Metadata:
       m_Items: []
+  - m_Id: 773206298705920
+    m_Localized: Gate {0}
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

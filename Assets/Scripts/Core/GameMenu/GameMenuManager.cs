@@ -21,9 +21,9 @@ namespace WekenDev.GameMenu
         private IGameManager _gameManager;
         private ISettings _settings;
         private InputAction _actionPlayer;
+        private IGlobalScoreRating _globalRating;
         private InputAction _actionUI;
         public event Action OnLeaveGame;
-
         public void HideMenu()
         {
             _gameMenuUI.HideGeneralMenu();
@@ -31,6 +31,8 @@ namespace WekenDev.GameMenu
 
         public void Init(ISettings setting, IGameManager gameManager)
         {
+            _globalRating = GetComponentInChildren<IGlobalScoreRating>();
+
             _voiceHudGameMenu = GetComponentInChildren<VoiceHudGameMenu>();
 
             _gameManager = gameManager;
@@ -91,6 +93,7 @@ namespace WekenDev.GameMenu
         private void HandleShowMenu(InputAction.CallbackContext context)
         {
             AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
+            _globalRating?.Show();
             if (_gameManager == null)
             {
                 InputManager.Instance.ChangeInputType(InputType.UI);
@@ -107,6 +110,7 @@ namespace WekenDev.GameMenu
         private void HandleHideMenu(InputAction.CallbackContext context)
         {
             AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
+            _globalRating?.Hide();
             // 1. Проверка на null ПЕРВОЙ
             if (_gameManager == null)
             {

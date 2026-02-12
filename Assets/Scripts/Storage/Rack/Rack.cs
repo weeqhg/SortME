@@ -1,5 +1,4 @@
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 
 public class Rack : MonoBehaviour
@@ -8,7 +7,7 @@ public class Rack : MonoBehaviour
     [SerializeField] private string _id;
     public Transform spawnPos;
     private TextMeshProUGUI[] _textTable;
-    [SerializeField] private ItemInfo _item;
+    [SerializeField] private ItemInfo _itemInfo;
 
     private void Start()
     {
@@ -30,14 +29,14 @@ public class Rack : MonoBehaviour
         _rackManager.Register(this);
     }
 
-    public (string, ItemInfo) GetIDandItem()
+    public ItemInfo GetIDandItem()
     {
-        return (_id, _item);
+        return _itemInfo;
     }
 
     public bool IsBusy()
     {
-        if (_item == null) return false;
+        if (_itemInfo == null) return false;
         else return true;
     }
 
@@ -50,16 +49,17 @@ public class Rack : MonoBehaviour
     {
         if (other.CompareTag("Item"))
         {
-            _item = other.GetComponent<ItemInfo>();
-            if (_item.state != ItemState.Dispatched)
+            _itemInfo = other.GetComponent<ItemInfo>();
+            if (_itemInfo.state != ItemState.Dispatched)
             {
                 MeshRenderer meshRenderer = other.GetComponent<MeshRenderer>();
                 if (meshRenderer != null) meshRenderer.enabled = true;
-                DamageableItem damageableItem = other.GetComponent<DamageableItem>();
-                damageableItem.UnpacItem();
-                _item.state = ItemState.Stored;
 
-                Debug.Log(_item.name + "Размещён");
+                DurabilityItem damageableItem = other.GetComponent<DurabilityItem>();
+                damageableItem.UnpacItem();
+
+                _itemInfo.ChangeNameItem(_id);
+                _itemInfo.ChangeItemState(ItemState.Stored);
             }
         }
     }
@@ -67,8 +67,8 @@ public class Rack : MonoBehaviour
     {
         if (other.CompareTag("Item"))
         {
-            _item.state = ItemState.Lost;
-            _item = null;
+            _itemInfo.ChangeItemState(ItemState.Ordering);
+            _itemInfo = null;
         }
     }
 

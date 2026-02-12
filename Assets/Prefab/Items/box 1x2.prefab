@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7114526097352028329}
   - component: {fileID: 4411419160616763586}
   - component: {fileID: 3140091385537435929}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Particles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4916,7 +4916,7 @@ GameObject:
   - component: {fileID: 5300206324357100782}
   - component: {fileID: 3257552655559346449}
   - component: {fileID: 3600958492907378078}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: box 1x2
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -5036,7 +5036,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemInfo
   nameKeyItem: 
   icon: {fileID: 0}
-  state: 0
+  box: {fileID: -493582942, guid: 96d925ccd23bebb4fa314bd0e98d39dd, type: 3}
 --- !u!114 &7552852401544026166
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5057,6 +5057,8 @@ MonoBehaviour:
   damageAnimationDuration: 0.3
   scalePunch: 0.1
   _itemType: 1
+  _currentDurabilyItem: 100
+  _currentDurabilyBox: 100
 --- !u!54 &1362074266157565203
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5178,7 +5180,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5755472701869057227}
   - component: {fileID: 7277592401254129325}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: AudioSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
