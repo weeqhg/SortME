@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d87bdd0b3f345984e994914117591b6a, type: 3}
+  m_Name: Picture_0
+  m_EditorClassIdentifier: Assembly-CSharp::ItemScriptableOnject
+  nameKeyItem: Picture_vos
+  icon: {fileID: 1213993140, guid: ef32721b4c9da0546a91d91c3eae0b7d, type: 3}
+  mesh: {fileID: 8761668312856269560, guid: c12e723fdb70b8944a9cef748ef15642, type: 3}
+  texture: {fileID: 2800000, guid: a592e7f414317cc4780e98d8797f5fcb, type: 3}

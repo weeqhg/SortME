@@ -5004,7 +5004,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8678051503262659174}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 006e9186218b42e46a603a2f7af34abf, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -5080,6 +5080,8 @@ MonoBehaviour:
   _itemType: 0
   _currentDurabilyItem: 100
   _currentDurabilyBox: 100
+  _cartonBox: {fileID: -2552903072909144725, guid: 12d15e695354eba4c92255f780f0ab89, type: 3}
+  info: {fileID: 0}
 --- !u!54 &1362074266157565203
 Rigidbody:
   m_ObjectHideFlags: 0

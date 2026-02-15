@@ -5,48 +5,48 @@ public enum ItemState
 {
     Arrived,
     Stored,
-    Dispatched,
-    Ordering
+    Ordering,
+    Dispatched
 }
 public class ItemInfo : MonoBehaviour
 {
     public string nameKeyItem;
     public Sprite icon;
     public Sprite box;
-    public event Action<ItemInfo, ItemState> stateChanged;
     private ItemState _state;
     private bool isBox = true;
-    private bool isChange = false;
+    private bool isUnpack = false;
 
     public bool IsBox
     {
         get => isBox;
+    }
+    public bool IsUnpack
+    {
+        get => isUnpack;
     }
     public ItemState state
     {
         get => _state;
     }
 
-    public void Reset()
-    {
-        isChange = false;
-    }
-
     public void ChangeItemState(ItemState newState)
     {
         _state = newState;
-        stateChanged?.Invoke(this, _state);
     }
     public void ChangeBoxState(bool value)
     {
         isBox = value;
     }
+    public void ChangeUnpackState(bool value)
+    {
+        isUnpack = value;
+    }
     public void ChangeNameItem(string newName)
     {
-        if (isChange == false)
+        if (ItemState.Ordering != state)
         {
             nameKeyItem = newName;
-            isChange = true;
         }
     }
 }

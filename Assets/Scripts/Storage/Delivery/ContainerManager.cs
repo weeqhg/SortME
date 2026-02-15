@@ -151,11 +151,9 @@ public class ContainerManager : NetworkBehaviour
 
             if (itemToReuse != null)
             {
-                itemToReuse.transform.position = pos.position;
                 itemToReuse.SetActive(true);
-                ItemInfo info = itemToReuse.GetComponent<ItemInfo>();
-                info.ChangeItemState(ItemState.Arrived);
-                info.Reset();
+
+                itemToReuse.transform.position = pos.position;
 
                 NetworkObject netObj = itemToReuse.GetComponent<NetworkObject>();
                 if (netObj != null && !netObj.IsSpawned)
@@ -167,8 +165,6 @@ public class ContainerManager : NetworkBehaviour
 
                 GameObject obj = Instantiate(prefab, pos);
                 _spawnedItems.Add(obj);
-                ItemInfo info = obj.GetComponent<ItemInfo>();
-                info.ChangeItemState(ItemState.Arrived);
 
                 NetworkObject netObj = obj.GetComponent<NetworkObject>();
                 if (netObj != null)
@@ -190,6 +186,7 @@ public class ContainerManager : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
+        _spawnedItems.Clear();
         _netDeliveryProgress.OnValueChanged -= OnDeliveryProgressChanged;
         DOTween.KillAll();
     }

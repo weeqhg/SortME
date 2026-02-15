@@ -77,7 +77,7 @@ namespace WekenDev.Player.Controller
                 float currentDiff = _cameraPivot.position.y - _playerBody.position.y;
                 float timePassed = Time.time - _lastCheckTime;
 
-                if (Mathf.Abs(currentDiff - _lastHeightDiff) * 10f > 0.5f && timePassed < 0.6f && cameraHeight < playerHeight - 0.3f) // Камера на 0.5м ниже игрока
+                if (Mathf.Abs(currentDiff - _lastHeightDiff) * 10f > 0.5f && timePassed < 0.6f && cameraHeight < playerHeight + 0.3f) // Камера на 0.5м ниже игрока
                 {
                     ReleaseObject();
 

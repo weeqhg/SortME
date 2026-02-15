@@ -1,15 +1,14 @@
 using System;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class OrderManager : NetworkBehaviour
 {
-    [System.Serializable]
+    [Serializable]
     public class Order
     {
         public int containerID;
-        public ItemInfo itemInfo;
+        public ItemManager item;
         public float timeLimit;
         public float maxTimeLimit;
         //public float reward;
@@ -21,7 +20,8 @@ public class OrderManager : NetworkBehaviour
     [SerializeField] private Vector2 _orderTimeLimitRange = new Vector2(60f, 120f);
     [SerializeField] private Vector2 _orderRewardRange = new Vector2(50f, 200f);
     [SerializeField] private ContainerOrder[] _containers;
-    private List<Order> _activeOrders = new List<Order>();
+
+    private Order _activeOrder;
     private float _orderTimer;
     private float _nextOrderTime;
 
@@ -29,24 +29,26 @@ public class OrderManager : NetworkBehaviour
     {
         _orderUI.Init();
         _nextOrderTime = UnityEngine.Random.Range(_orderDelayRange.x, _orderDelayRange.y);
+    }
 
+    public override void OnNetworkSpawn()
+    {
         for (int i = 0; i < _containers.Length; i++)
         {
             _containers[i].Open();
         }
     }
 
-    public void CompleteOrder(string nameKeyItem)
+    public void CompleteOrder()
     {
-        Order order = _activeOrders.Find(o => o.itemInfo.nameKeyItem == nameKeyItem);
-
-        if (order != null)
+        if (_activeOrder != null)
         {
-            _activeOrders.Remove(order);
+            _activeOrder.item.OnOutRack -= OnItemStateChanged;
+            _activeOrder.item.OnDestroyItem -= OnDestroyItem;
 
-            _orderUI.ChangeStateOnWaitClientRpc();
+            _activeOrder = null;
 
-            //Здесь уведомлять игроков о выполнении квеста
+            _orderUI.ChangeStateOnCompleteClientRpc();
         }
     }
 
@@ -55,26 +57,29 @@ public class OrderManager : NetworkBehaviour
         if (!IsServer) return;
         if (_rackManager == null) return;
 
-        if (_activeOrders.Count > 0)
+        if (_activeOrder != null)
         {
-            Order order = _activeOrders[0];
-            order.timeLimit -= Time.deltaTime;
+            _activeOrder.timeLimit -= Time.deltaTime;
 
-            float progress = order.timeLimit / order.maxTimeLimit; // или начальное значение timeLimit
+            float progress = _activeOrder.timeLimit / _activeOrder.maxTimeLimit; // или начальное значение timeLimit
             _orderUI.WaitTimer(progress);
 
-            if (order.timeLimit <= 0)
+            if (_activeOrder.timeLimit <= 0)
             {
-                _activeOrders.RemoveAt(0);
-                order.itemInfo.stateChanged -= OnItemStateChanged;
-                _orderUI.ChangeStateOnWaitClientRpc();
-                Debug.Log($"Заказ на {order.itemInfo.nameKeyItem} провален (время истекло)");
+                _activeOrder.item.ChangeItemState(ItemState.Stored);
+
+                _activeOrder.item.OnOutRack -= OnItemStateChanged;
+                _activeOrder.item.OnDestroyItem -= OnDestroyItem;
+
+                _orderUI.ChangeStateOnFailClientRpc();
+
+                _activeOrder = null;
             }
 
             return;
         }
 
-        if (_activeOrders.Count > 0) return;
+        if (_activeOrder != null) return;
 
         _orderTimer += Time.deltaTime;
 
@@ -87,45 +92,57 @@ public class OrderManager : NetworkBehaviour
 
     private void CreateNewOrder()
     {
-        ItemInfo itemInfo = _rackManager.GetRandomRackIDandID();
+        ItemManager newItem = _rackManager.GetRandomRackIDandID();
 
-        if (itemInfo == null)
+        if (newItem == null)
         {
             _orderUI.ChangeStateOnWaitClientRpc();
-            Debug.Log("Нет доступных предметов для заказа");
             return;
         }
 
-        itemInfo.stateChanged += OnItemStateChanged;
+
+        newItem.ChangeItemState(ItemState.Ordering);
         ContainerOrder randomCont = _containers.Length > 0 ? _containers[UnityEngine.Random.Range(0, _containers.Length)] : null;
         float timeLimitValue = UnityEngine.Random.Range(_orderTimeLimitRange.x, _orderTimeLimitRange.y);
 
         Order newOrder = new Order
         {
             containerID = randomCont.GetId(),
-            itemInfo = itemInfo,
+            item = newItem,
             timeLimit = timeLimitValue,
             maxTimeLimit = timeLimitValue
             //reward = UnityEngine.Random.Range(_orderRewardRange.x, _orderRewardRange.y),F
         };
 
-        randomCont.ChangeOrderID(itemInfo.nameKeyItem);
+        randomCont.ChangeOrderID(newItem.info.nameKeyItem);
 
-        _orderUI.UpdateOrder(itemInfo.nameKeyItem, itemInfo.icon);
+        _activeOrder = newOrder;
 
-        _activeOrders.Add(newOrder);
+        _activeOrder.item.OnOutRack += OnItemStateChanged;
+        _activeOrder.item.OnDestroyItem += OnDestroyItem;
+
+        _orderUI.UpdateOrder(newItem.info.nameKeyItem, newItem.info.icon);
     }
 
 
-    private void OnItemStateChanged(ItemInfo item, ItemState newState)
+    private void OnItemStateChanged()
     {
-        if (newState == ItemState.Ordering)
+        if (_activeOrder != null)
         {
-            Order order = _activeOrders.Find(o => o.itemInfo == item);
+            _orderUI.UpdateGate(_activeOrder.containerID, _activeOrder.item.info.box);
+            _activeOrder.item.OnOutRack -= OnItemStateChanged;
+        }
+    }
 
-            _orderUI.UpdateGate(order.containerID, order.itemInfo.box);
+    private void OnDestroyItem()
+    {
+        if (_activeOrder != null)
+        {
+            _activeOrder.item.OnOutRack -= OnItemStateChanged;
+            _activeOrder.item.OnDestroyItem -= OnDestroyItem;
 
-            item.stateChanged -= OnItemStateChanged;
+            _activeOrder = null;
+            _orderUI.ChangeStateOnFailClientRpc();
         }
     }
 

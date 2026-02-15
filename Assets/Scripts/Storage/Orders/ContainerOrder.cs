@@ -13,7 +13,7 @@ public class ContainerOrder : NetworkBehaviour
     private string _orderID = "";
     [SerializeField] private bool _hasCorrectItem = false;
     [SerializeField] private int _playerInside = 0;
-    private ItemInfo _item;
+    private ItemManager _item;
     [SerializeField] private Transform _posPush;
     public bool IsPlayer
     {
@@ -60,13 +60,17 @@ public class ContainerOrder : NetworkBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!IsServer) return;
+
         if (other.CompareTag("Item"))
         {
-            ItemInfo item = other.GetComponent<ItemInfo>();
+            ItemInfo info = other.GetComponent<ItemInfo>();
 
-            if (item != null && item.nameKeyItem == _orderID)
+            if (info != null && info.nameKeyItem == _orderID)
             {
-                _item = item;
+                _item = other.GetComponent<ItemManager>();
+
+                if (!IsServer) return;
+
                 _hasCorrectItem = true;
 
                 if (IsNearPlayer())
@@ -105,11 +109,21 @@ public class ContainerOrder : NetworkBehaviour
 
     private System.Collections.IEnumerator OpenAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay / 2);
-        _item.gameObject.SetActive(false);
+        yield return new WaitForSeconds(0.5f);
+
+        _item.GameObject.SetActive(false);
+        _item.ChangeUnpackStateClientRpc(false);
+        _item.ChangeItemState(ItemState.Dispatched);
+
+        NetworkObject netObj = _item.GameObject.GetComponent<NetworkObject>();
+
+        if (netObj != null && netObj.IsSpawned)
+            netObj.Despawn(false);
+
         yield return new WaitForSeconds(delay);
         Open();
     }
+
     private void OnTriggerExit(Collider other)
     {
         if (!IsServer) return;
@@ -144,7 +158,7 @@ public class ContainerOrder : NetworkBehaviour
         if (_playerInside <= 0 && _hasCorrectItem)
         {
             StartCoroutine(CloseTemporarily());
-            _orderManager.CompleteOrder(_orderID);
+            _orderManager.CompleteOrder();
             _orderID = "";
             _hasCorrectItem = false;
         }

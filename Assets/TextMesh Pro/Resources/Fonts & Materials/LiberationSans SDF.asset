@@ -45,6 +45,7 @@ Material:
     - _GlowPower: 1
     - _GradientScale: 10
     - _LightAngle: 3.1416
+    - _OutlineWidth: 0.2
     - _Reflectivity: 10
     - _ScaleRatioA: 0.9
     - _ScaleRatioB: 0.73125
@@ -54,7 +55,9 @@ Material:
     - _TextureWidth: 1024
     - _WeightBold: 0.75
     m_Colors:
+    - _FaceColor: {r: 1, g: 1, b: 1, a: 1}
     - _GlowColor: {r: 1, g: 0.5394797, b: 0.011612245, a: 1}
+    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &11400000

@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using System.Collections;
 
 public class ConveyorSend : NetworkBehaviour
 {
@@ -12,25 +13,43 @@ public class ConveyorSend : NetworkBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-
         if (other.CompareTag("Item"))
         {
-            MeshRenderer meshRenderer = other.GetComponent<MeshRenderer>();
-            if (meshRenderer != null) meshRenderer.enabled = false;
-            if (_audioSource != null) _audioSource.PlayOneShot(_clips[Random.Range(0, _clips.Length)]);
+            OnItemCollectedClientRpc(other.gameObject);
 
-            if (!IsServer) return;
-
-            Rigidbody rb = other.attachedRigidbody;
-            if (rb != null)
+            if (IsServer)
             {
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
+                StartCoroutine(DelayedServerLogic(other));
             }
+        }
+    }
 
-            _rackManager.PostItem(other.gameObject);
 
+    [ClientRpc]
+    private void OnItemCollectedClientRpc(NetworkObjectReference itemRef)
+    {
+        if (itemRef.TryGet(out NetworkObject netObj))
+        {
+            MeshRenderer meshRenderer = netObj.GetComponent<MeshRenderer>();
+            if (meshRenderer != null) meshRenderer.enabled = false;
+
+            if (_audioSource != null)
+                _audioSource.PlayOneShot(_clips[Random.Range(0, _clips.Length)]);
+        }
+    }
+
+    private IEnumerator DelayedServerLogic(Collider other)
+    {
+        // Ждем кадр, чтобы клиенты успели скрыть предмет
+        yield return null;
+
+        Rigidbody rb = other.attachedRigidbody;
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
         }
 
+        _rackManager.PostItem(other.gameObject);
     }
 }

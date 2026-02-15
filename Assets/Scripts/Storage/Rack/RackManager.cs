@@ -21,7 +21,7 @@ public class RackManager : MonoBehaviour
         freeRacks[Random.Range(0, freeRacks.Length)].PlaceItem(item);
     }
 
-    public ItemInfo GetRandomRackIDandID()
+    public ItemManager GetRandomRackIDandID()
     {
         var occupiedRacks = _racks.Where(r => r.IsBusy()).ToArray();
         if (occupiedRacks.Length == 0) return null;

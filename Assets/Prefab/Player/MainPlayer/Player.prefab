@@ -312,7 +312,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Cinemachine::Cinemachine.CinemachineCollider
   m_CollideAgainst:
     serializedVersion: 2
-    m_Bits: 65
+    m_Bits: 321
   m_IgnoreTag: Player
   m_TransparentLayers:
     serializedVersion: 2
@@ -813,7 +813,7 @@ MonoBehaviour:
   _leftLeg: {fileID: 5379582838613940347}
   _rightLeg: {fileID: 5243457873420240587}
   _speed: 5
-  _uprightStrength: 100
+  _uprightStrength: 20
   _cameraPivot: {fileID: 3966235866877463070}
   _jumpForce: 3
   _groundLayer:
@@ -1152,6 +1152,66 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
+    - target: {fileID: -3934493445228835189, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3934493445228835189, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7660445
+      objectReference: {fileID: 0}
+    - target: {fileID: -3934493445228835189, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.6427876
+      objectReference: {fileID: 0}
+    - target: {fileID: -3934493445228835189, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3934493445228835189, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3934493445228835189, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -80
+      objectReference: {fileID: 0}
+    - target: {fileID: -3934493445228835189, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3816448565754523589, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3816448565754523589, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3816448565754523589, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7660445
+      objectReference: {fileID: 0}
+    - target: {fileID: -3816448565754523589, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.6427876
+      objectReference: {fileID: 0}
+    - target: {fileID: -3816448565754523589, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3816448565754523589, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3816448565754523589, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -80
+      objectReference: {fileID: 0}
+    - target: {fileID: -3816448565754523589, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -3708354655488387204, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
       propertyPath: m_Layer
       value: 2
@@ -1175,6 +1235,14 @@ PrefabInstance:
     - target: {fileID: -3168179224794240773, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
       propertyPath: m_TagString
       value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: -2520048761659115345, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2520048761659115345, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 635547659545568360, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
       propertyPath: m_Layer
@@ -1186,7 +1254,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
       propertyPath: m_Name
-      value: NewCharacter (1)
+      value: NewCharacter
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
       propertyPath: m_Layer
@@ -1227,7 +1295,7 @@ PrefabInstance:
     - target: {fileID: 5631970234333447461, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 5113563861466835298, guid: 28e31f17a66a3ad45ba2ec82eb26549a, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 5631970234333447461, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
       propertyPath: m_Quality
       value: 0
@@ -1991,8 +2059,8 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.16
-  m_Center: {x: 0, y: 0.09, z: 0}
+  m_Radius: 0.2
+  m_Center: {x: 0, y: 0.03, z: 0}
 --- !u!54 &1035595227946266860
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2031,7 +2099,7 @@ HingeJoint:
   m_ConnectedBody: {fileID: 670627186663090523}
   m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
-  m_Axis: {x: 1, y: 0, z: 0}
+  m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_UseSpring: 0
@@ -2267,7 +2335,7 @@ HingeJoint:
   m_ConnectedBody: {fileID: 447082449266711892}
   m_ConnectedArticulationBody: {fileID: 0}
   m_Anchor: {x: 0, y: 0, z: 0}
-  m_Axis: {x: 1, y: 0, z: 0}
+  m_Axis: {x: -1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_UseSpring: 0
@@ -2285,7 +2353,7 @@ HingeJoint:
   m_UseAcceleration: 0
   m_Limits:
     min: 0
-    max: 0
+    max: 180
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0

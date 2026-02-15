@@ -1,14 +1,14 @@
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Rack : MonoBehaviour
+public class Rack : NetworkBehaviour
 {
     [SerializeField] private RackManager _rackManager;
     [SerializeField] private string _id;
     public Transform spawnPos;
     private TextMeshProUGUI[] _textTable;
-    [SerializeField] private ItemInfo _itemInfo;
-
+    private ItemManager _item;
     private void Start()
     {
         Init();
@@ -29,14 +29,14 @@ public class Rack : MonoBehaviour
         _rackManager.Register(this);
     }
 
-    public ItemInfo GetIDandItem()
+    public ItemManager GetIDandItem()
     {
-        return _itemInfo;
+        return _item;
     }
 
     public bool IsBusy()
     {
-        if (_itemInfo == null) return false;
+        if (_item == null) return false;
         else return true;
     }
 
@@ -47,28 +47,39 @@ public class Rack : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!IsServer) return;
+
         if (other.CompareTag("Item"))
         {
-            _itemInfo = other.GetComponent<ItemInfo>();
-            if (_itemInfo.state != ItemState.Dispatched)
+            ItemInfo info = other.GetComponent<ItemInfo>();
+            if (info.state != ItemState.Ordering)
             {
+                ItemManager itemManager = other.GetComponent<ItemManager>();
                 MeshRenderer meshRenderer = other.GetComponent<MeshRenderer>();
                 if (meshRenderer != null) meshRenderer.enabled = true;
 
-                DurabilityItem damageableItem = other.GetComponent<DurabilityItem>();
-                damageableItem.UnpacItem();
-
-                _itemInfo.ChangeNameItem(_id);
-                _itemInfo.ChangeItemState(ItemState.Stored);
+                itemManager.UnpacItem();
+                itemManager.ChangeItemState(ItemState.Stored);
+                itemManager.ChangeNameItem(_id);
+                itemManager.OnDestroyItem += OnDestroyItem;
+                _item = itemManager;
             }
         }
     }
+    private void OnDestroyItem()
+    {
+        _item = null;
+    }
     private void OnTriggerExit(Collider other)
     {
+        if (!IsServer) return;
+
         if (other.CompareTag("Item"))
         {
-            _itemInfo.ChangeItemState(ItemState.Ordering);
-            _itemInfo = null;
+            ItemManager itemManager = other.GetComponent<ItemManager>();
+            itemManager?.OutRack();
+            itemManager.OnDestroyItem -= OnDestroyItem;
+            _item = null;
         }
     }
 

@@ -72,39 +72,44 @@ namespace WekenDev.Player.Controller
         {
             StartWalkAnimation();
         }
-
+        private Sequence _walkSequence;
         private void StartWalkAnimation()
         {
             if (_netMove.Value)
             {
-                DOTween.Kill(_leftLeg);
-                DOTween.Kill(_rightLeg);
+                // Останавливаем предыдущую анимацию
+                if (_walkSequence != null)
+                {
+                    _walkSequence.Kill();
+                    _walkSequence = null;
+                }
 
-                _leftLeg.DOLocalMoveZ(_startPosLeft.z + 0.17f, 0.2f)
-    .SetLoops(-1, LoopType.Yoyo)
-    .SetEase(Ease.InOutSine)
-                    .OnStepComplete(() =>
-                    {
-                        AudioEffect();
-                    });
+                _leftLeg.localRotation = Quaternion.Euler(-80, 0, 0);
+                _rightLeg.localRotation = Quaternion.Euler(-80, 0, 0);
 
+                _walkSequence = DOTween.Sequence();
 
-                _rightLeg.DOLocalMoveZ(_startPosRight.z + 0.17f, 0.2f)
-     .SetLoops(-1, LoopType.Yoyo)
-     .SetEase(Ease.InOutSine)
-                     .OnStepComplete(() =>
-                     {
-                         AudioEffect();
-                     })
-                     .SetDelay(0.25f);
+                _walkSequence.Append(_leftLeg.DOLocalRotate(new Vector3(-80, 90, 0), 0.2f).SetEase(Ease.OutQuad));
+                _walkSequence.Join(_rightLeg.DOLocalRotate(new Vector3(-80, 90, 0), 0.2f).SetEase(Ease.OutQuad));
+                _walkSequence.AppendCallback(() => AudioEffect());
+
+                _walkSequence.Append(_leftLeg.DOLocalRotate(new Vector3(-80, -90, 0), 0.2f).SetEase(Ease.OutQuad));
+                _walkSequence.Join(_rightLeg.DOLocalRotate(new Vector3(-80, -90, 0), 0.2f).SetEase(Ease.OutQuad));
+                _walkSequence.AppendCallback(() => AudioEffect());
+
+                _walkSequence.SetLoops(-1, LoopType.Restart);
+                _walkSequence.Play();
             }
             else
             {
-                DOTween.Kill(_leftLeg);
-                DOTween.Kill(_rightLeg);
+                if (_walkSequence != null)
+                {
+                    _walkSequence.Kill();
+                    _walkSequence = null;
+                }
 
-                _leftLeg.DOLocalMoveZ(_startPosLeft.z, 0.2f);
-                _rightLeg.DOLocalMoveZ(_startPosRight.z, 0.2f);
+                _leftLeg.DOLocalRotate(new Vector3(-80, 0, 0), 0.2f);
+                _rightLeg.DOLocalRotate(new Vector3(-80, 0, 0), 0.2f);
             }
         }
 
