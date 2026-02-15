@@ -15,9 +15,8 @@ namespace WekenDev.Player.Controller
         [SerializeField] private LayerMask _grabLayer = ~0;
         [SerializeField] private float _grabRadiusStatic = 0.01f;
         [SerializeField] private float _grabRadiusDynamic = 0.1f;
-        [SerializeField] private float _grabForce = 200f;
         [SerializeField] private float _maxDistance = 0.5f;
-        private float _jumpForce = 2f;
+        private float _jumpForce = 1f;
         private bool _isAttached = false;
         private bool _isGrabbing = false;
 
