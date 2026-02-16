@@ -101,7 +101,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ae2bbd4672ba6da4d8129f02854e946e, type: 3}
   - {fileID: 8300000, guid: 282228a20d0e3c7489ff115a65504945, type: 3}
   - {fileID: 8300000, guid: a7c2d9e5639905941bcde3155f4ceb1c, type: 3}
-  _musicIntense: []
+  _musicIntense:
+  - {fileID: 8300000, guid: 5c134f67203f8ba43a2e9e4e371089e1, type: 3}
+  - {fileID: 8300000, guid: d0622401e949ae04092eeeaed362bf71, type: 3}
 --- !u!82 &6722753179902398320
 AudioSource:
   m_ObjectHideFlags: 0

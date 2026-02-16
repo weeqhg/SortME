@@ -20,6 +20,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private GameObject _gameMenuCanvas;
     [SerializeField] private GameObject _customizationPrefab;
     [SerializeField] private GameObject _audioManagerPrefab;
+    [SerializeField] private GameObject _globalScoreManagerPrefab;
 
     //Нужные менеджеры будем объявлять отсюда или сразу создаваться
     [SerializeField] private GameManager _gameManager;
@@ -42,9 +43,10 @@ public class Bootstrap : MonoBehaviour
     private СustomizationManager _сustomizationManager;
     private ICustomizationMenu _customInterface;
 
-    private GlobalScoreRating _globalScoreRating;
-
     private StorageManager _storageManager;
+
+    private GlobalScoreManager _globalScoreManager;
+    private IGlobalScoreManager _globalScoreInterface;
     private void Start()
     {
         CreateObject();
@@ -80,6 +82,9 @@ public class Bootstrap : MonoBehaviour
 
         //if (_storagePrefab != null) _storagePrefab = Instantiate(_storagePrefab);
         //else Debug.LogWarning("Внимание модуль Storage не установлен");
+
+        if (_globalScoreManagerPrefab != null) _globalScoreManagerPrefab = Instantiate(_globalScoreManagerPrefab);
+        else Debug.LogWarning("Внимание модуль LobbyManager не установлен");
     }
 
 
@@ -105,6 +110,9 @@ public class Bootstrap : MonoBehaviour
         if (_gameManager != null) _gameManagerInterface = _gameManager.GetComponent<IGameManager>();
 
         if (_storagePrefab != null) _storageManager = _storagePrefab.GetComponentInChildren<StorageManager>();
+
+        if (_globalScoreManagerPrefab != null) _globalScoreManager = _globalScoreManagerPrefab.GetComponentInChildren<GlobalScoreManager>();
+        if (_globalScoreManagerPrefab != null) _globalScoreInterface = _globalScoreManagerPrefab.GetComponent<IGlobalScoreManager>();
     }
 
     private void StartInitialized()
@@ -117,9 +125,9 @@ public class Bootstrap : MonoBehaviour
 
         _playerSpawn?.Init();
 
-        _menuManager?.Init(_settings, _customInterface, _gameManagerInterface);
+        _menuManager?.Init(_settings, _customInterface, _gameManagerInterface, _globalScoreInterface);
 
-        _gameMenuManager?.Init(_settings, _gameManagerInterface);
+        _gameMenuManager?.Init(_settings, _gameManagerInterface, _globalScoreInterface);
 
         _gameManager?.Init(_playerSpawn);
 
@@ -130,7 +138,6 @@ public class Bootstrap : MonoBehaviour
         _сustomizationManager?.Init(_mainMenu, _gameManagerInterface);
 
         _storageManager?.Init();
-
     }
 
 

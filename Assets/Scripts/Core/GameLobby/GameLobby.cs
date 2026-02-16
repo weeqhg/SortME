@@ -74,7 +74,7 @@ namespace WekenDev.MainMenu
         {
             try
             {
-                _gameManager.SwitchCurrentState(GameState.Playing);
+                _gameManager?.SwitchCurrentState(GameState.Playing);
                 // 1. Создаем лобби
                 joinedLobby = await LobbyService.Instance.CreateLobbyAsync(
                     "0000",

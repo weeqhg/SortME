@@ -1,28 +1,14 @@
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
-using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Localization.Components;
-using UnityEngine.InputSystem;
-using DG.Tweening;
 
-public interface IGlobalScoreRating
+public class GlobalSoreUI : MonoBehaviour
 {
-    void Show();
-    void Hide();
-}
-
-public class GlobalScoreRating : MonoBehaviour, IGlobalScoreRating
-{
-    [SerializeField] private string _url = "https://score-tracker--nikkhripunov.replit.app/api/score";
     [SerializeField] private LocalizeStringEvent _scoreText;
     [SerializeField] private Image _positivScore;
     [SerializeField] private Image _negativScore;
-
-    private Coroutine _updateCoroutine;
-    private float _updateInterval = 3f;
-
-    private int _currentScore = 0;
 
     [Header("Настройки анимации")]
     [SerializeField] private float scoreAnimationDuration = 0.5f;
@@ -41,80 +27,53 @@ public class GlobalScoreRating : MonoBehaviour, IGlobalScoreRating
     [SerializeField] private float pulseDuration = 0.2f;
 
     private int _displayedScore = 0;
+    private int _targetScore = 0;
+
     private Tween _scoreTween;
     private Tween _positiveSliderTween;
     private Tween _negativeSliderTween;
 
-    public void Show()
+    private IGlobalScoreManager _globalScore;
+    public void Init(IGlobalScoreManager globalScore)
     {
-        StartCoroutine(FetchScore());
+        _globalScore = globalScore;
 
-        StartScoreUpdates();
-    }
-
-    public void Hide()
-    {
-        StopScoreUpdates();
-    }
-
-
-    private void StartScoreUpdates()
-    {
-        StopScoreUpdates();
-
-        _updateCoroutine = StartCoroutine(PeriodicScoreUpdate());
-    }
-    private void StopScoreUpdates()
-    {
-        if (_updateCoroutine != null)
+        if (_globalScore != null)
         {
-            StopCoroutine(_updateCoroutine);
-            _updateCoroutine = null;
+            _targetScore = _globalScore.CurrentScore;
+            _displayedScore = _targetScore;
+
+            UpdateScoreText(_targetScore);
+            UpdateSlidersWithAnimation(_targetScore);
+
+            _globalScore.OnScoreChanged += OnScoreChanged;
+            Debug.Log("GlobalScoreManager найден");
+        }
+        else
+        {
+            Debug.LogError("GlobalScoreManager не найден!");
         }
     }
-
-    private IEnumerator PeriodicScoreUpdate()
+    private void OnScoreChanged(int newScore)
     {
-        while (true)
-        {
-            yield return new WaitForSeconds(_updateInterval);
-
-            yield return StartCoroutine(FetchScore());
-        }
-    }
-
-    IEnumerator FetchScore()
-    {
-        using (UnityWebRequest request = UnityWebRequest.Get(_url))
-        {
-            yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                string json = request.downloadHandler.text;
-                ScoreData data = JsonUtility.FromJson<ScoreData>(json);
-
-                // Анимируем изменение счёта
-                AnimateScoreChange(data.score);
-
-                // Анимируем слайдеры
-                UpdateSlidersWithAnimation(data.score);
-            }
-        }
+        Debug.Log($"Получено новое значение счета: {newScore}");
+        _targetScore = newScore;
+        AnimateScoreChange(newScore);
+        UpdateSlidersWithAnimation(newScore);
     }
 
     #region Animation
     void AnimateScoreChange(int newScore)
     {
-        if (newScore == _currentScore)
+        if (newScore == _displayedScore)
         {
             UpdateScoreText(newScore);
             return;
         }
 
 
-        // Сохраняем новое значение
-        int oldScore = _currentScore;
-        _currentScore = newScore;
+        // Сохраняем старое значение для эффектов
+        int oldScore = _displayedScore;
 
         // Останавливаем предыдущую анимацию если есть
         if (_scoreTween != null && _scoreTween.IsActive())
@@ -130,14 +89,14 @@ public class GlobalScoreRating : MonoBehaviour, IGlobalScoreRating
                 _displayedScore = x;
                 UpdateScoreText(x);
             },
-            _currentScore,         // Конечное значение
+            newScore,         // Конечное значение
             scoreAnimationDuration // Длительность
         )
         .SetEase(scoreEase)
         .OnStart(() =>
         {
             // Эффект при начале анимации
-            if (usePulseEffect && Mathf.Abs(_currentScore - oldScore) >= 5)
+            if (usePulseEffect && Mathf.Abs(newScore - oldScore) >= 5)
             {
                 PulseScoreText();
             }
@@ -145,14 +104,14 @@ public class GlobalScoreRating : MonoBehaviour, IGlobalScoreRating
         .OnComplete(() =>
         {
             // Гарантируем точное значение в конце
-            _displayedScore = _currentScore;
-            UpdateScoreText(_currentScore);
+            _displayedScore = newScore;
+            UpdateScoreText(newScore);
         });
 
         // Визуальные эффекты для больших изменений
-        if (Mathf.Abs(_currentScore - oldScore) >= 20)
+        if (Mathf.Abs(newScore - oldScore) >= 20)
         {
-            PlayBigChangeEffect(oldScore, _currentScore);
+            PlayBigChangeEffect(oldScore, newScore);
         }
     }
 
@@ -287,46 +246,11 @@ public class GlobalScoreRating : MonoBehaviour, IGlobalScoreRating
     }
     #endregion
 
-    public void SendScore(int delta)
-    {
-        StartCoroutine(PostScore(delta));
-    }
-
-    IEnumerator PostScore(int delta)
-    {
-        string json = "{\"delta\": " + delta + "}";
-        using (UnityWebRequest request = new UnityWebRequest(_url, "POST"))
-        {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            yield return request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                Debug.Log("Error: " + request.error);
-            }
-            else
-            {
-                //Debug.Log("Success: " + request.downloadHandler.text);
-            }
-        }
-    }
-
     private void OnDestroy()
     {
-        StopScoreUpdates();
-
+        _globalScore.OnScoreChanged -= OnScoreChanged;
         DOTween.Kill(_scoreText?.transform);
         DOTween.Kill(_positivScore);
         DOTween.Kill(_negativScore);
     }
-}
-
-[System.Serializable]
-public class ScoreData
-{
-    public int score;
 }

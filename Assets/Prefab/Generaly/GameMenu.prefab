@@ -1434,7 +1434,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3889129907040136400}
-  - component: {fileID: 4412324180185650656}
+  - component: {fileID: 7126776612140619349}
   m_Layer: 0
   m_Name: GlobalRating
   m_TagString: Untagged
@@ -1463,7 +1463,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4412324180185650656
+--- !u!114 &7126776612140619349
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1472,10 +1472,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6088145490178726312}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72d47392546e369458acd7a3fcac7d9d, type: 3}
+  m_Script: {fileID: 11500000, guid: 01ee5f6aa0d812443838b61de7f46296, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ReplitWebSocketManager
-  _url: https://score-tracker--nikkhripunov.replit.app/api/score
+  m_EditorClassIdentifier: Assembly-CSharp::GlobalSoreUI
   _scoreText: {fileID: 8565220956131915189}
   _positivScore: {fileID: 5843084194292493310}
   _negativScore: {fileID: 884649359266781375}
@@ -1822,7 +1821,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4412324180185650656}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ApiClient, Assembly-CSharp
         m_MethodName: SendScore
         m_Mode: 3
@@ -1955,7 +1954,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4412324180185650656}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ApiClient, Assembly-CSharp
         m_MethodName: SendScore
         m_Mode: 3

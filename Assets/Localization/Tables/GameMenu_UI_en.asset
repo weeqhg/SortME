@@ -30,6 +30,26 @@ MonoBehaviour:
     m_Localized: 'Rating: {0}'
     m_Metadata:
       m_Items: []
+  - m_Id: 13793360383827968
+    m_Localized: Login to your warehouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13793393426554880
+    m_Localized: Create new warehouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13793497478848512
+    m_Localized: Guest warehouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13795207119101952
+    m_Localized: Enter warehouse name...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13795415148191744
+    m_Localized: Enter warehouse password...
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -42,6 +42,7 @@ namespace WekenDev.MainMenu.UI
             _quitGame.onClick.AddListener(QuitGame);
         }
 
+
         public void ShowMainMenu()
         {
             HideAll();

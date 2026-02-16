@@ -20,8 +20,9 @@ namespace WekenDev.GameMenu
         private VoiceHudGameMenu _voiceHudGameMenu;
         private IGameManager _gameManager;
         private ISettings _settings;
+        private IGlobalScoreManager _globalScore;
         private InputAction _actionPlayer;
-        private IGlobalScoreRating _globalRating;
+        private GlobalSoreUI _globalScoreUI;
         private InputAction _actionUI;
         public event Action OnLeaveGame;
         public void HideMenu()
@@ -29,9 +30,15 @@ namespace WekenDev.GameMenu
             _gameMenuUI.HideGeneralMenu();
         }
 
-        public void Init(ISettings setting, IGameManager gameManager)
+        public void Init(ISettings setting, IGameManager gameManager, IGlobalScoreManager globalScore)
         {
-            _globalRating = GetComponentInChildren<IGlobalScoreRating>();
+            _globalScore = globalScore;
+
+            if (_globalScore != null)
+            {
+                _globalScoreUI = GetComponentInChildren<GlobalSoreUI>();
+                _globalScoreUI.Init(globalScore);
+            }
 
             _voiceHudGameMenu = GetComponentInChildren<VoiceHudGameMenu>();
 
@@ -93,7 +100,7 @@ namespace WekenDev.GameMenu
         private void HandleShowMenu(InputAction.CallbackContext context)
         {
             AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
-            _globalRating?.Show();
+            _globalScore?.StartAutoUpdate();
             if (_gameManager == null)
             {
                 InputManager.Instance.ChangeInputType(InputType.UI);
@@ -110,7 +117,7 @@ namespace WekenDev.GameMenu
         private void HandleHideMenu(InputAction.CallbackContext context)
         {
             AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
-            _globalRating?.Hide();
+            _globalScore?.StopAutoUpdate();
             // 1. Проверка на null ПЕРВОЙ
             if (_gameManager == null)
             {

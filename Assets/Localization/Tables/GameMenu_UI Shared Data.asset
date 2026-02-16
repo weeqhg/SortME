@@ -27,6 +27,26 @@ MonoBehaviour:
     m_Key: rating
     m_Metadata:
       m_Items: []
+  - m_Id: 13793360383827968
+    m_Key: login
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13793393426554880
+    m_Key: new_warehouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13793497478848512
+    m_Key: guest
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13795207119101952
+    m_Key: enter_login
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13795415148191744
+    m_Key: enter_password
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

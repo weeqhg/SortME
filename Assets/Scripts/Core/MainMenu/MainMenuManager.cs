@@ -15,17 +15,25 @@ namespace WekenDev.MainMenu
         private ISettings _settings;
         private IGameManager _gameManager;
         private ICustomizationMenu _customMenu;
+        private IGlobalScoreManager _globalScore;
         private GameObject _camera;
         private InputAction _actionEscape;
         private MainMenuUI _menuUI;
         private AuthorUI _authorUI;
-        private IGlobalScoreRating _globalRating;
-        public void Init(ISettings settings, ICustomizationMenu custom, IGameManager gameManager)
+        private GlobalSoreUI _globalScoreUI;
+        public void Init(ISettings settings, ICustomizationMenu custom, IGameManager gameManager, IGlobalScoreManager globalScore)
         {
 
-            _globalRating = GetComponentInChildren<IGlobalScoreRating>();
-            _globalRating?.Show();
-            
+            _globalScore = globalScore;
+
+            if (_globalScore != null)
+            {
+                _globalScoreUI = GetComponentInChildren<GlobalSoreUI>();
+                _globalScoreUI.Init(globalScore);
+            }
+
+            _globalScore?.StartAutoUpdate();
+
             _settings = settings;
             if (_settings != null) _settings.OnClosed += Show;
             _customMenu = custom;
@@ -50,7 +58,6 @@ namespace WekenDev.MainMenu
                 _menuUI.OnСustomizationMenu += HandleShowCustomize;
             }
         }
-
         public void Show()
         {
             if (_gameManager == null || _gameManager?.GetCurrentState() == GameState.MainMenu)
@@ -58,14 +65,14 @@ namespace WekenDev.MainMenu
                 if (_camera != null && !_camera.activeSelf) _camera.SetActive(true);
 
                 _menuUI.ShowMainMenu();
-                _globalRating?.Show();
+                _globalScore?.StartAutoUpdate();
             }
         }
 
         public void Hide()
         {
             if (_camera != null) _camera.SetActive(false);
-            _globalRating?.Hide();
+            _globalScore?.StopAutoUpdate();
         }
 
         private void HandleEscapeKey(InputAction.CallbackContext context)
