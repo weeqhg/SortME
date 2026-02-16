@@ -176,7 +176,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7726349796094005879}
         m_TargetAssemblyTypeName: GlobalScoreManager, Assembly-CSharp
-        m_MethodName: AddScoreTest
+        m_MethodName: AddScoreValue
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -309,7 +309,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7726349796094005879}
         m_TargetAssemblyTypeName: GlobalScoreManager, Assembly-CSharp
-        m_MethodName: AddScoreTest
+        m_MethodName: AddScoreValue
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

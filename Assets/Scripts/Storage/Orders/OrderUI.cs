@@ -1,10 +1,11 @@
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Localization.Components;
-using Unity.Netcode;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Collections;
+using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.Localization.Components;
+using UnityEngine.UI;
 
 public class OrderUI : NetworkBehaviour
 {
@@ -27,6 +28,16 @@ public class OrderUI : NetworkBehaviour
     [SerializeField] private AudioClip _failOrder;
     [SerializeField] private AudioClip _newOrder;
     [SerializeField] private AudioClip _gateOrder;
+
+
+    [Header("Rating (5 stars)")]
+    [SerializeField] private CanvasGroup _ratingGroup;
+    [SerializeField] private Image[] _ratingStars = new Image[5];
+    [SerializeField] private Sprite _starOn;
+    [SerializeField] private Sprite _starOff;
+    [SerializeField] private float _ratingShowDuration = 2f;
+
+    private Coroutine _ratingHideRoutine;
     public override void OnNetworkSpawn()
     {
         _waitProgress.OnValueChanged += OnProgressChanged;
@@ -95,6 +106,70 @@ public class OrderUI : NetworkBehaviour
         _nameGate.RefreshString();
 
         _audioSource.PlayOneShot(_gateOrder);
+    }
+
+    [ClientRpc]
+    public void ShowRatingClientRpc(int stars)
+    {
+        ShowRatingLocal(stars);
+    }
+
+    private void ShowRatingLocal(int stars)
+    {
+        int clamped = Mathf.Clamp(stars, 0, 5);
+
+        if (_ratingStars != null && _ratingStars.Length > 0)
+        {
+            for (int i = 0; i < _ratingStars.Length; i++)
+            {
+                if (_ratingStars[i] == null) continue;
+                if (_starOn != null && _starOff != null)
+                    _ratingStars[i].sprite = i < clamped ? _starOn : _starOff;
+                else
+                    _ratingStars[i].color = i < clamped ? Color.yellow : new Color(1f, 1f, 1f, 0.25f);
+            }
+        }
+
+        if (_ratingGroup != null)
+        {
+            if (_ratingHideRoutine != null) StopCoroutine(_ratingHideRoutine);
+            _ratingGroup.alpha = 1f;
+            _ratingHideRoutine = StartCoroutine(HideRatingAfterDelay(_ratingShowDuration));
+        }
+    }
+
+    private IEnumerator HideRatingAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (_ratingGroup == null)
+        {
+            if (_ratingStars != null)
+            {
+                for (int i = 0; i < _ratingStars.Length; i++)
+                {
+                    if (_ratingStars[i] == null) continue;
+                    if (_starOff != null) _ratingStars[i].sprite = _starOff;
+                    else _ratingStars[i].color = new Color(1f, 1f, 1f, 0.25f);
+                }
+            }
+            _ratingHideRoutine = null;
+            yield break;
+        }
+
+        float t = 0f;
+        float fade = 0.25f;
+        float start = _ratingGroup.alpha;
+        while (t < fade)
+        {
+            t += Time.deltaTime;
+            _ratingGroup.alpha = Mathf.Lerp(start, 0f, t / fade);
+            yield return null;
+        }
+
+        _ratingGroup.alpha = 0f;
+
+        _ratingHideRoutine = null;
     }
 
     public void WaitTimer(float value)

@@ -16,9 +16,9 @@ public class OrderManager : NetworkBehaviour
 
     [SerializeField] private OrderUI _orderUI;
     [SerializeField] private RackManager _rackManager;
+    [SerializeField] private ScoreCounterManager _scoreCounter;
     [SerializeField] private Vector2 _orderDelayRange = new Vector2(30f, 60f);
     [SerializeField] private Vector2 _orderTimeLimitRange = new Vector2(60f, 120f);
-    [SerializeField] private Vector2 _orderRewardRange = new Vector2(50f, 200f);
     [SerializeField] private ContainerOrder[] _containers;
 
     private Order _activeOrder;
@@ -46,10 +46,30 @@ public class OrderManager : NetworkBehaviour
             _activeOrder.item.OnOutRack -= OnItemStateChanged;
             _activeOrder.item.OnDestroyItem -= OnDestroyItem;
 
+            int stars = _scoreCounter.CountScoreForOrder(_activeOrder.item.GetCurrentDurabily(), _activeOrder.timeLimit, _activeOrder.maxTimeLimit, _activeOrder.item.info.IsBox);
+
+            if (_orderUI != null)
+                _orderUI.ShowRatingClientRpc(stars);
+
             _activeOrder = null;
 
             _orderUI.ChangeStateOnCompleteClientRpc();
         }
+    }
+
+    private void FailOrder()
+    {
+        _activeOrder.item.OnOutRack -= OnItemStateChanged;
+        _activeOrder.item.OnDestroyItem -= OnDestroyItem;
+
+        _orderUI.ChangeStateOnFailClientRpc();
+
+        _scoreCounter.CountScoreForOrder(0, 0, _activeOrder.maxTimeLimit, false);
+
+        if (_orderUI != null)
+            _orderUI.ShowRatingClientRpc(0);
+
+        _activeOrder = null;
     }
 
     private void Update()
@@ -61,19 +81,14 @@ public class OrderManager : NetworkBehaviour
         {
             _activeOrder.timeLimit -= Time.deltaTime;
 
-            float progress = _activeOrder.timeLimit / _activeOrder.maxTimeLimit; // или начальное значение timeLimit
+            float progress = _activeOrder.timeLimit / _activeOrder.maxTimeLimit;
             _orderUI.WaitTimer(progress);
 
             if (_activeOrder.timeLimit <= 0)
             {
                 _activeOrder.item.ChangeItemState(ItemState.Stored);
 
-                _activeOrder.item.OnOutRack -= OnItemStateChanged;
-                _activeOrder.item.OnDestroyItem -= OnDestroyItem;
-
-                _orderUI.ChangeStateOnFailClientRpc();
-
-                _activeOrder = null;
+                FailOrder();
             }
 
             return;
@@ -111,7 +126,6 @@ public class OrderManager : NetworkBehaviour
             item = newItem,
             timeLimit = timeLimitValue,
             maxTimeLimit = timeLimitValue
-            //reward = UnityEngine.Random.Range(_orderRewardRange.x, _orderRewardRange.y),F
         };
 
         randomCont.ChangeOrderID(newItem.info.nameKeyItem);
@@ -138,11 +152,9 @@ public class OrderManager : NetworkBehaviour
     {
         if (_activeOrder != null)
         {
-            _activeOrder.item.OnOutRack -= OnItemStateChanged;
-            _activeOrder.item.OnDestroyItem -= OnDestroyItem;
+            _activeOrder.item.ChangeItemState(ItemState.Dispatched);
 
-            _activeOrder = null;
-            _orderUI.ChangeStateOnFailClientRpc();
+            FailOrder();
         }
     }
 

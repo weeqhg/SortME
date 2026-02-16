@@ -52,6 +52,7 @@ public class ItemManager : NetworkBehaviour
     {
         OnOutRack?.Invoke();
     }
+    public int GetCurrentDurabily() => _currentDurabilyItem;
 
     public override void OnNetworkSpawn()
     {
@@ -155,7 +156,7 @@ public class ItemManager : NetworkBehaviour
 
         if (force > 5f)
         {
-            int damage = (int)force;
+            int damage = (int)force * 2;
             if (info.IsBox)
             {
                 _currentDurabilyBox -= damage;

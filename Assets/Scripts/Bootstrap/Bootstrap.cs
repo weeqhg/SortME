@@ -23,9 +23,10 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private GameObject _globalScoreManagerPrefab;
 
     //Нужные менеджеры будем объявлять отсюда или сразу создаваться
+    [SerializeField] private StartGame _startGame;
+
     [SerializeField] private GameManager _gameManager;
     private IGameManager _gameManagerInterface;
-    [SerializeField] private StartGame _startGame;
 
     private MainMenuManager _menuManager;
     private IMainMenu _mainMenu;
@@ -137,7 +138,7 @@ public class Bootstrap : MonoBehaviour
 
         _сustomizationManager?.Init(_mainMenu, _gameManagerInterface);
 
-        _storageManager?.Init();
+        _storageManager?.Init(_globalScoreInterface);
     }
 
 

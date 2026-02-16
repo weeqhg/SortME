@@ -20,6 +20,16 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1a30f6aa248a2fc4ba7c98dfbaafba8d
+    m_Address: Assets/Localization/Tables/Reviews_Neutral Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 20defc368850607409f0de098870c09f
+    m_Address: Assets/Localization/Tables/Reviews_Good Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2c3add09340deed418ff84f395a5b372
     m_Address: Assets/Localization/Game Shared Data.asset
     m_ReadOnly: 1
@@ -27,6 +37,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5554e0c9aab301f44bbdb012f915cbd0
     m_Address: Assets/Localization/Tables/GameMenu_UI Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 66737d3754001484ea4ad6e682f54bc6
+    m_Address: Assets/Localization/Tables/Reviews Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
