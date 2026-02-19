@@ -10,8 +10,8 @@ public class StartGame : NetworkBehaviour
 
     public enum Scene
     {
-        LobbyScene,
-        GameScene
+        GameScene,
+        Tutorial
     }
 
     public void Init(GameLobby gameLobby)
@@ -25,7 +25,7 @@ public class StartGame : NetworkBehaviour
     {
         StartGameServerRpc();
     }
-    
+
     [ServerRpc]
     private void StartGameServerRpc()
     {

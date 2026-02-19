@@ -23,6 +23,7 @@ namespace WekenDev.MainMenu
         private GlobalSoreUI _globalScoreUI;
         public void Init(ISettings settings, ICustomizationMenu custom, IGameManager gameManager, IGlobalScoreManager globalScore)
         {
+            InputManager.Instance.ChangeInputType(InputType.UI);
 
             _globalScore = globalScore;
 

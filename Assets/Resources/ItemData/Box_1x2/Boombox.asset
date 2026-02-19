@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d87bdd0b3f345984e994914117591b6a, type: 3}
+  m_Name: Boombox
+  m_EditorClassIdentifier: Assembly-CSharp::ItemScriptableOnject
+  nameKeyItem: boombox
+  icon: {fileID: -451816669, guid: b603364ec27923545a893b65f338a051, type: 3}
+  mesh: {fileID: -1595160273072348756, guid: 943ea16b334b85446947e14a3f524bac, type: 3}
+  texture: {fileID: 2800000, guid: c68c2350b0b69bf478e51ed6ae733b35, type: 3}

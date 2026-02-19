@@ -8,6 +8,7 @@ public class GateOpenClose : MonoBehaviour
     [SerializeField] private AudioClip _truckDrive;
     [SerializeField] private float _targetHeight = -1.5f;
 
+    [SerializeField] private bool _fistSkip;
     public void OpenGate()
     {
         Sequence sequence = DOTween.Sequence();
@@ -15,10 +16,10 @@ public class GateOpenClose : MonoBehaviour
         sequence.AppendInterval(2f)
                 .AppendCallback(() =>
                 {
-                    PlayRandomSound(_gateSound);
+                    if (!_fistSkip) PlayRandomSound(_gateSound);
+                    else _fistSkip = false;
                 })
                 .Append(transform.DOLocalMoveY(_targetHeight, 1.5f).SetEase(Ease.OutCubic));
-
     }
 
     public void CloseGate()

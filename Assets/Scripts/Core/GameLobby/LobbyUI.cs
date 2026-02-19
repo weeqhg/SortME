@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace WekenDev.MainMenu.UI
+namespace WekenDev.GameMenu
 {
     public class LobbyUI : MonoBehaviour
     {

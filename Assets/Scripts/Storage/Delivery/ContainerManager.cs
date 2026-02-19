@@ -1,8 +1,9 @@
-using UnityEngine;
-using Unity.Netcode;
+using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DG.Tweening;
+using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ContainerManager : NetworkBehaviour
@@ -139,6 +140,37 @@ public class ContainerManager : NetworkBehaviour
     {
         if (!IsServer) return;
 
+        if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening)
+        {
+            Debug.LogWarning("ContainerManager: NetworkManager not listening yet. Waiting to spawn items...");
+            StartCoroutine(SpawnWhenListening(container));
+            return;
+        }
+
+        DoSpawn(container);
+    }
+
+    private IEnumerator SpawnWhenListening(ContainerData container)
+    {
+        float timeout = 5f;
+        float waited = 0f;
+
+        while (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening)
+        {
+            if (waited >= timeout)
+            {
+                Debug.LogError("ContainerManager: Timed out waiting for NetworkManager to start listening. Items not spawned.");
+                yield break;
+            }
+            waited += Time.deltaTime;
+            yield return null;
+        }
+
+        DoSpawn(container);
+    }
+
+    private void DoSpawn(ContainerData container)
+    {
         Transform pos = container.spawnPos;
 
         for (int i = 0; i < _currentCount; i++)

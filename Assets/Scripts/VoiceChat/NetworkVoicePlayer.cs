@@ -10,15 +10,27 @@ namespace WekenDev.VoiceChat
 
         public void Init()
         {
-            _recorder = Recorder.Instance;
 
             _localSpeaker = GetComponent<Speaker>();
 
+            _recorder = Recorder.Instance;
             if (_recorder == null) Debug.Log($"Не найден модуль Recoder");
 
-            _localSpeaker.Init();
+            _localSpeaker?.Init();
+        }
 
-            if (_recorder != null) _recorder.OnSendDataToNetwork += SendVoiceToServer;
+        public override void OnNetworkSpawn()
+        {
+            // Обновим ссылку на рекордер если она была null
+            if (_recorder == null) _recorder = Recorder.Instance;
+
+            if (IsOwner)
+            {
+                if (_recorder != null)
+                {
+                    _recorder.OnSendDataToNetwork += SendVoiceToServer;
+                }
+            }
         }
 
         // Отправка голоса на сервер
@@ -58,6 +70,8 @@ namespace WekenDev.VoiceChat
         [ServerRpc(Delivery = RpcDelivery.Unreliable)]
         private void SendVoiceDataServerRpc(byte[] voiceData)
         {
+            if (!IsSpawned) return;
+
             ReceiveVoiceDataClientRpc(voiceData, OwnerClientId);
         }
 

@@ -11,7 +11,6 @@ namespace WekenDev.MainMenu.UI
         [SerializeField] private Text version;
         [Header("CanvasGroup")]
         [SerializeField] private CanvasGroup _mainMenu;
-        [SerializeField] private CanvasGroup _lobbyMenu;
         [SerializeField] private CanvasGroup _joinMenu;
         [SerializeField] private CanvasGroup _authorMenu;
 
@@ -55,10 +54,6 @@ namespace WekenDev.MainMenu.UI
         private void ShowWaitStartRoom()
         {
             HideAll();
-
-            _lobbyMenu.alpha = 1f;
-            _lobbyMenu.interactable = true;
-            _lobbyMenu.blocksRaycasts = true;
         }
 
         private void ShowJoinRoom()
@@ -103,10 +98,6 @@ namespace WekenDev.MainMenu.UI
             _joinMenu.alpha = 0f;
             _joinMenu.interactable = false;
             _joinMenu.blocksRaycasts = false;
-
-            _lobbyMenu.alpha = 0f;
-            _lobbyMenu.interactable = false;
-            _lobbyMenu.blocksRaycasts = false;
 
             _authorMenu.alpha = 0f;
             _authorMenu.interactable = false;

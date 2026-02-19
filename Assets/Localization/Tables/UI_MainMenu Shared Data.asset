@@ -67,6 +67,18 @@ MonoBehaviour:
     m_Key: "\u0441ustom"
     m_Metadata:
       m_Items: []
+  - m_Id: 15261624360230912
+    m_Key: tutor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15732639049703424
+    m_Key: main_dev
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15732766686568448
+    m_Key: special_thanks!
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -7,6 +7,7 @@ using WekenDev.InputSystem;
 
 public interface IGameMenuController
 {
+    void ChangeJoinCode(string code);
     void HideMenu();
     event Action OnLeaveGame;
 }
@@ -25,9 +26,14 @@ namespace WekenDev.GameMenu
         private GlobalSoreUI _globalScoreUI;
         private InputAction _actionUI;
         public event Action OnLeaveGame;
+        private LobbyUI _lobbyUI;
         public void HideMenu()
         {
             _gameMenuUI.HideGeneralMenu();
+        }
+        public void ChangeJoinCode(string code)
+        {
+            _lobbyUI.ChangeJoinCode(code);
         }
 
         public void Init(ISettings setting, IGameManager gameManager, IGlobalScoreManager globalScore)
@@ -40,6 +46,7 @@ namespace WekenDev.GameMenu
                 _globalScoreUI.Init(globalScore);
             }
 
+            _lobbyUI = GetComponentInChildren<LobbyUI>();
             _voiceHudGameMenu = GetComponentInChildren<VoiceHudGameMenu>();
 
             _gameManager = gameManager;

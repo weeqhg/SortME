@@ -10,7 +10,7 @@ namespace WekenDev.VoiceChat
         private int _writePos = 0;
         private const int CLIP_SIZE = 4800;
 
-
+        [SerializeField, Range(0.1f, 5f)] private float _gain = 1f;
         public void Init()
         {
             _source = gameObject.GetComponent<AudioSource>();
@@ -36,9 +36,13 @@ namespace WekenDev.VoiceChat
 
             float[] samples = AudioOpusCompressor.Decompress(voiceData);
 
-            foreach (float sample in samples)
+            for (int i = 0; i < samples.Length; i++)
             {
-                _clipData[_writePos] = sample;
+                float s = samples[i] * _gain;
+                if (s > 1f) s = 1f;
+                else if (s < -1f) s = -1f;
+
+                _clipData[_writePos] = s;
                 _writePos = (_writePos + 1) % CLIP_SIZE;
             }
 

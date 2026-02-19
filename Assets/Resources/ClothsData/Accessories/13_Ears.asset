@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: 13_Ears
   m_EditorClassIdentifier: Assembly-CSharp::ClothScriptableObject
   id: 13
-  mesh: {fileID: 633491980630042108, guid: 5d3001b47a1ab7d478dae822081396a2, type: 3}
+  mesh: {fileID: 7978322606710606754, guid: 2bc7de3dd731f1f4cb126297609bba1a, type: 3}
   icon: {fileID: 1553397992, guid: faa1fe0450230ed40ba1111c8da707e1, type: 3}
   type: 0

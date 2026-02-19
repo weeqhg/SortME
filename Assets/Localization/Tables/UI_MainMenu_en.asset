@@ -70,6 +70,18 @@ MonoBehaviour:
     m_Localized: Custom
     m_Metadata:
       m_Items: []
+  - m_Id: 15261624360230912
+    m_Localized: Tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15732639049703424
+    m_Localized: Lead developers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15732766686568448
+    m_Localized: Special thanks!
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

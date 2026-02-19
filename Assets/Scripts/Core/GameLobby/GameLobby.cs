@@ -9,6 +9,7 @@ using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WekenDev.MainMenu.UI;
 
@@ -18,8 +19,19 @@ namespace WekenDev.MainMenu
     public class GameLobby : MonoBehaviour
     {
         [SerializeField] private Button _createRoom;
-        [SerializeField] private LobbyUI _lobbyUI;
+        [SerializeField] private Button _tutorial;
+        [SerializeField] private string _tutorialScene;
         [SerializeField] private JoinUI _joinUI;
+
+
+        [Header("Loading UI")]
+        [Tooltip("Image с типом Filled (Fill Method - Horizontal/Vertical)")]
+        [SerializeField] private Image _loadingFill;
+        [Tooltip("Опциональная контейнер-панель для показа индикатора загрузки")]
+        [SerializeField] private CanvasGroup _loadingContainer;
+        [Tooltip("Длительность одного цикла заполнения (сек)")]
+        [SerializeField] private float _loadingCycleDuration = 1.0f;
+
 
         private int maxPlayers = 4;
         private const string KEY_RELAY_JOIN_CODE = "RelayJoinCode";
@@ -32,6 +44,7 @@ namespace WekenDev.MainMenu
 
         public event Action OnStartGame;
 
+        private Coroutine _loadingRoutine;
         public enum Scene
         {
             LobbyScene,
@@ -52,12 +65,21 @@ namespace WekenDev.MainMenu
 
             if (_joinUI != null) _joinUI.OnJoinLobby += JoinLobby;
 
+            if (_tutorial != null) _tutorial.onClick.AddListener(StartTutorial);
+
             if (NetworkManager.Singleton != null) NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
         }
 
         public void StartGame()
         {
             OnStartGame?.Invoke();
+        }
+
+        private void StartTutorial()
+        {
+            StartLoadingAnimation();
+
+            SceneManager.LoadScene(_tutorialScene);
         }
 
         private async void InitializeAuth()
@@ -75,6 +97,10 @@ namespace WekenDev.MainMenu
             try
             {
                 _gameManager?.SwitchCurrentState(GameState.Playing);
+
+                // Запускаем индикатор загрузки
+                StartLoadingAnimation();
+
                 // 1. Создаем лобби
                 joinedLobby = await LobbyService.Instance.CreateLobbyAsync(
                     "0000",
@@ -85,7 +111,7 @@ namespace WekenDev.MainMenu
                 string lobbyCode = joinedLobby.LobbyCode; // ← Вот он!
                 Debug.Log($"КОД ЛОББИ ДЛЯ ПРИСОЕДИНЕНИЯ: {lobbyCode}");
 
-                _lobbyUI.ChangeJoinCode(lobbyCode);
+                _gameMenu.ChangeJoinCode(lobbyCode);
 
                 // 2. Создаем Relay
                 Allocation allocation = await RelayService.Instance.CreateAllocationAsync(maxPlayers - 1);
@@ -119,16 +145,24 @@ namespace WekenDev.MainMenu
             {
                 Debug.LogError($"Ошибка: {e.Message}");
             }
+            finally
+            {
+                // Останавливаем индикатор загрузки в любом случае
+                StopLoadingAnimation();
+            }
         }
 
         // Присоединение по коду (клиент)
         private async void JoinLobby(string lobbyCode)
         {
-            _lobbyUI.ChangeJoinCode(lobbyCode);
+            _gameMenu.ChangeJoinCode(lobbyCode);
 
 
             try
             {
+                // Показываем индикатор на время подключения
+                StartLoadingAnimation();
+
                 // 1. Находим лобби
                 joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
 
@@ -163,6 +197,10 @@ namespace WekenDev.MainMenu
             {
                 _mainMenu?.Show();
                 Debug.Log($"Ошибка: {e.Message}");
+            }
+            finally
+            {
+                StopLoadingAnimation();
             }
         }
 
@@ -251,6 +289,8 @@ namespace WekenDev.MainMenu
             {
                 // Снимаем флаг
                 _isLeaving = false;
+
+                SceneManager.LoadScene("GameScene");
             }
         }
 
@@ -307,11 +347,67 @@ namespace WekenDev.MainMenu
             return joinedLobby != null && joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
         }
 
+
+        private void StartLoadingAnimation()
+        {
+            if (_loadingFill == null && _loadingContainer == null) return;
+
+            if (_loadingContainer != null) _loadingContainer.alpha = 1f;
+
+            if (_loadingFill != null) _loadingFill.fillAmount = 0f;
+
+            if (_loadingRoutine != null) StopCoroutine(_loadingRoutine);
+            _loadingRoutine = StartCoroutine(LoadingFillRoutine());
+        }
+
+        private void StopLoadingAnimation()
+        {
+            if (_loadingRoutine != null)
+            {
+                StopCoroutine(_loadingRoutine);
+                _loadingRoutine = null;
+            }
+
+            if (_loadingFill != null) _loadingFill.fillAmount = 0f;
+            if (_loadingContainer != null) _loadingContainer.alpha = 0f;
+        }
+
+        private System.Collections.IEnumerator LoadingFillRoutine()
+        {
+            if (_loadingFill == null)
+            {
+                // просто показываем контейнер без анимации
+                yield break;
+            }
+
+            float cycle = Mathf.Max(0.01f, _loadingCycleDuration);
+
+            while (true)
+            {
+                float t = 0f;
+                while (t < cycle)
+                {
+                    t += Time.deltaTime;
+                    _loadingFill.fillAmount = Mathf.Clamp01(t / cycle);
+                    yield return null;
+                }
+
+                // сброс для повторного цикла (можно изменить на обратную анимацию)
+                _loadingFill.fillAmount = 0f;
+                yield return null;
+            }
+        }
+
         private void OnDestroy()
         {
             if (_gameMenu != null) _gameMenu.OnLeaveGame -= LeaveLobbyAndRelay;
             if (_joinUI != null) _joinUI.OnJoinLobby -= JoinLobby;
-            if (NetworkManager.Singleton != null) NetworkManager.Singleton.OnClientConnectedCallback -= OnClientDisconnectCallback;
+
+            // исправленная отписка: от того же колбэка, который мы подписываем в Init
+            if (NetworkManager.Singleton != null)
+            {
+                NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnectCallback;
+            }
         }
     }
 }
