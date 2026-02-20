@@ -7,17 +7,17 @@ public class StorageManager : NetworkBehaviour
     private OrderManager _orderManager;
     private ContainerManager _containerManager;
     private ScoreCounterManager _scoreCounterManager;
-    private IGlobalScoreManager _globalScore;
-    public void Init(IGlobalScoreManager globalScore)
+    private IScoreManager _scoreManager;
+    public void Init(IScoreManager scoreManager)
     {
-        _globalScore = globalScore;
+        _scoreManager = scoreManager;
 
         _rackManager = GetComponentInChildren<RackManager>();
         _scoreCounterManager = GetComponentInChildren<ScoreCounterManager>();
         _containerManager = GetComponentInChildren<ContainerManager>();
         _orderManager = GetComponentInChildren<OrderManager>();
 
-        if (_globalScore != null) _scoreCounterManager.Init(_globalScore);
+        if (_scoreManager != null) _scoreCounterManager.Init(scoreManager);
         else Debug.Log("GlobalScore не установлен");
 
         _containerManager.Init();

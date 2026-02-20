@@ -20,7 +20,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private GameObject _gameMenuCanvas;
     [SerializeField] private GameObject _customizationPrefab;
     [SerializeField] private GameObject _audioManagerPrefab;
-    [SerializeField] private GameObject _globalScoreManagerPrefab;
+    [SerializeField] private GameObject _scorePrefab;
 
     //Нужные менеджеры будем объявлять отсюда или сразу создаваться
     [SerializeField] private StartGame _startGame;
@@ -46,8 +46,9 @@ public class Bootstrap : MonoBehaviour
 
     private StorageManager _storageManager;
 
-    private GlobalScoreManager _globalScoreManager;
-    private IGlobalScoreManager _globalScoreInterface;
+    private ScoreManager _scoreManager;
+    private IScoreManager _scoreInterface;
+
     private void Start()
     {
         CreateObject();
@@ -78,13 +79,13 @@ public class Bootstrap : MonoBehaviour
         if (_customizationPrefab != null) _customizationPrefab = Instantiate(_customizationPrefab);
         else Debug.LogWarning("Внимание модуль Customization не установлен");
 
-        if (_audioManagerPrefab != null) _audioManagerPrefab = Instantiate(_audioManagerPrefab);
-        else Debug.LogWarning("Внимание модуль AudioManager не установлен");
+        //if (AudioManager.Instance == null) _audioManagerPrefab = Instantiate(_audioManagerPrefab);
+        //else Debug.LogWarning("Внимание модуль AudioManager не установлен или уже на сцене");
 
         //if (_storagePrefab != null) _storagePrefab = Instantiate(_storagePrefab);
         //else Debug.LogWarning("Внимание модуль Storage не установлен");
 
-        if (_globalScoreManagerPrefab != null) _globalScoreManagerPrefab = Instantiate(_globalScoreManagerPrefab);
+        if (_scorePrefab != null) _scorePrefab = Instantiate(_scorePrefab);
         else Debug.LogWarning("Внимание модуль LobbyManager не установлен");
     }
 
@@ -112,8 +113,8 @@ public class Bootstrap : MonoBehaviour
 
         if (_storagePrefab != null) _storageManager = _storagePrefab.GetComponentInChildren<StorageManager>();
 
-        if (_globalScoreManagerPrefab != null) _globalScoreManager = _globalScoreManagerPrefab.GetComponentInChildren<GlobalScoreManager>();
-        if (_globalScoreManagerPrefab != null) _globalScoreInterface = _globalScoreManagerPrefab.GetComponent<IGlobalScoreManager>();
+        if (_scorePrefab != null) _scoreManager = _scorePrefab.GetComponentInChildren<ScoreManager>();
+        if (_scorePrefab != null) _scoreInterface = _scorePrefab.GetComponent<IScoreManager>();
     }
 
     private void StartInitialized()
@@ -126,9 +127,9 @@ public class Bootstrap : MonoBehaviour
 
         _playerSpawn?.Init();
 
-        _menuManager?.Init(_settings, _customInterface, _gameManagerInterface, _globalScoreInterface);
+        _menuManager?.Init(_settings, _customInterface, _gameManagerInterface, _scoreInterface);
 
-        _gameMenuManager?.Init(_settings, _gameManagerInterface, _globalScoreInterface);
+        _gameMenuManager?.Init(_settings, _gameManagerInterface, _scoreInterface);
 
         _gameManager?.Init(_playerSpawn);
 
@@ -138,7 +139,9 @@ public class Bootstrap : MonoBehaviour
 
         _сustomizationManager?.Init(_mainMenu, _gameManagerInterface);
 
-        _storageManager?.Init(_globalScoreInterface);
+        _storageManager?.Init(_scoreInterface);
+
+        _scoreManager?.Init();
     }
 
 

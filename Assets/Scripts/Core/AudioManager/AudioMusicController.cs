@@ -15,13 +15,27 @@ namespace WekenDev.AudioManagerGame
         [Header("Music")]
         [SerializeField] private AudioClip[] _musicCalm;
         [SerializeField] private AudioClip[] _musicIntense;
+        [SerializeField] private float _fadeDuration = 1f; // длительность кроссфейда
+        [SerializeField] private float _defaultVolume = 1f;
 
-        private AudioSource _musicAudio;
+        [SerializeField] private AudioSource[] _musicSources = new AudioSource[2];
+        private int _activeSourceIndex;
         private AudioDesign _currentAudiodesign;
+        private Coroutine _crossfadeCoroutine;
 
         public void Init()
         {
-            _musicAudio = GetComponent<AudioSource>();
+            // настроим исходный source
+            _musicSources[0].playOnAwake = false;
+            _musicSources[0].loop = false;
+            _musicSources[0].volume = _defaultVolume;
+
+            // создаём второй источник для кроссфейда
+            _musicSources[1].playOnAwake = false;
+            _musicSources[1].loop = false;
+            _musicSources[1].volume = 0f;
+
+            _activeSourceIndex = 0;
         }
 
         //Music
@@ -30,7 +44,7 @@ namespace WekenDev.AudioManagerGame
             switch (audioDesign)
             {
                 case AudioDesign.Mute:
-                    _musicAudio.Stop();
+                    StopAllMusic();
                     break;
                 case AudioDesign.Calm:
                     if (_musicCalm.Length > 0) SwitchToNextTrack(AudioDesign.Calm);
@@ -45,53 +59,119 @@ namespace WekenDev.AudioManagerGame
         {
             _currentAudiodesign = audioDesign;
 
-            StartCoroutine(FadeOutAndPlayNext());
-        }
-
-        private IEnumerator FadeOutAndPlayNext()
-        {
-            if (_musicAudio.clip != null)
+            // если уже идёт кроссфейд — прерываем и запускаем новый
+            if (_crossfadeCoroutine != null)
             {
-                float fadeDuration = 3f; // Увеличь длительность
-                float startVolume = _musicAudio.volume;
-
-                // Плавное затухание
-                while (_musicAudio.volume > 0)
-                {
-                    _musicAudio.volume -= Time.deltaTime / fadeDuration;
-                    yield return null;
-                }
-
-                _musicAudio.Stop();
-                _musicAudio.volume = startVolume;
-
-                yield return new WaitForSeconds(0.5f); // Пауза перед следующим
+                StopCoroutine(_crossfadeCoroutine);
+                _crossfadeCoroutine = null;
             }
 
-            StartPlayMusic();
+            AudioSource active = _musicSources[_activeSourceIndex];
+
+            // если сейчас ничего не играет — просто проигрываем на активном источнике без паузы
+            if (!active.isPlaying)
+            {
+                PlayOnActiveSourceImmediate();
+            }
+            else
+            {
+                _crossfadeCoroutine = StartCoroutine(CrossfadeToNext(_fadeDuration));
+            }
         }
 
-        private void StartPlayMusic()
+        private void PlayOnActiveSourceImmediate()
         {
-            AudioClip clip = null;
+            AudioClip clip = GetClipForCurrentDesign();
+            if (clip == null) return;
 
-            if (_currentAudiodesign == AudioDesign.Calm) clip = _musicCalm[Random.Range(0, _musicCalm.Length)];
-            else if (_currentAudiodesign == AudioDesign.Intense) clip = _musicIntense[Random.Range(0, _musicIntense.Length)];
-
-            if (clip != null) _musicAudio.clip = clip;
-            _musicAudio.Play();
+            AudioSource active = _musicSources[_activeSourceIndex];
+            active.clip = clip;
+            active.volume = _defaultVolume;
+            active.Play();
 
             StartCoroutine(WaitForNextTrack());
         }
 
+        private IEnumerator CrossfadeToNext(float fadeDuration)
+        {
+            AudioSource active = _musicSources[_activeSourceIndex];
+            AudioSource next = _musicSources[1 - _activeSourceIndex];
+
+            AudioClip clip = GetClipForCurrentDesign();
+            if (clip == null) yield break;
+
+            next.clip = clip;
+            next.volume = 0f;
+            next.Play();
+
+            float t = 0f;
+            float fromVol = _defaultVolume;
+            while (t < fadeDuration)
+            {
+                t += Time.deltaTime;
+                float frac = Mathf.Clamp01(t / fadeDuration);
+                next.volume = Mathf.Lerp(0f, fromVol, frac);
+                active.volume = Mathf.Lerp(fromVol, 0f, frac);
+                yield return null;
+            }
+
+            active.Stop();
+            active.volume = fromVol;
+
+            _activeSourceIndex = 1 - _activeSourceIndex;
+            _crossfadeCoroutine = null;
+
+            StartCoroutine(WaitForNextTrack());
+        }
+
+        private AudioClip GetClipForCurrentDesign()
+        {
+            if (_currentAudiodesign == AudioDesign.Calm)
+            {
+                return _musicCalm.Length > 0 ? _musicCalm[Random.Range(0, _musicCalm.Length)] : null;
+            }
+            else if (_currentAudiodesign == AudioDesign.Intense)
+            {
+                return _musicIntense.Length > 0 ? _musicIntense[Random.Range(0, _musicIntense.Length)] : null;
+            }
+
+            return null;
+        }
+
+
         private IEnumerator WaitForNextTrack()
         {
-            while (_musicAudio.isPlaying)
+            AudioSource active = _musicSources[_activeSourceIndex];
+            while (active.isPlaying)
             {
                 yield return null;
             }
 
-            StartPlayMusic();
+            // когда трек закончился — проигрываем следующий тот же дизайн через кроссфейд
+            // если хотите без кроссфейда — вызывайте PlayOnActiveSourceImmediate()
+            if (_currentAudiodesign != AudioDesign.Mute)
+            {
+                _crossfadeCoroutine = StartCoroutine(CrossfadeToNext(_fadeDuration));
+            }
+        }
+
+        private void StopAllMusic()
+        {
+            foreach (var s in _musicSources)
+            {
+                if (s != null)
+                {
+                    s.Stop();
+                    s.clip = null;
+                    s.volume = _defaultVolume;
+                }
+            }
+
+            if (_crossfadeCoroutine != null)
+            {
+                StopCoroutine(_crossfadeCoroutine);
+                _crossfadeCoroutine = null;
+            }
         }
         ///////
     }

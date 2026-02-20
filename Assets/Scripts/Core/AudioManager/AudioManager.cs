@@ -9,6 +9,7 @@ public class AudioManager : MonoBehaviour
 
     private AudioMusicController _musicController;
     private AudioUiController _uiController;
+    private bool _isInitialized = false;
 
     private void Awake() => InitializeSingleton();
     private void InitializeSingleton()
@@ -21,16 +22,21 @@ public class AudioManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
     }
 
     public void Init()
     {
+        if (_isInitialized) return;
+
         _musicController = GetComponentInChildren<AudioMusicController>();
         _musicController.Init();
         ChangeMusic(AudioDesign.Calm);
 
         _uiController = GetComponentInChildren<AudioUiController>();
         _uiController.Init();
+
+        _isInitialized = true;
     }
 
 

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d87bdd0b3f345984e994914117591b6a, type: 3}
+  m_Name: Dry_Tree
+  m_EditorClassIdentifier: Assembly-CSharp::ItemScriptableOnject
+  nameKeyItem: dry_tree
+  icon: {fileID: 1452037223, guid: d499d7fd6de69544b9e1b436da61593d, type: 3}
+  mesh: {fileID: 4323335755571558612, guid: 107cfe99af7fd574fa1e872663c85107, type: 3}
+  texture: {fileID: 2800000, guid: f7fc84ecb8cd8574392483ba766b71d4, type: 3}

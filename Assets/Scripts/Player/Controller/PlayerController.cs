@@ -119,7 +119,7 @@ namespace WekenDev.Player.Controller
 
             HandleMovement();
 
-            if (_moveInput.magnitude > 0.1f || _leftHand == true || _rightHand == true) StabilizeSingleBody();
+            StabilizeSingleBody();
 
         }
 

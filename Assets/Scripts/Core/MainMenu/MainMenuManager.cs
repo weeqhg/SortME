@@ -15,25 +15,23 @@ namespace WekenDev.MainMenu
         private ISettings _settings;
         private IGameManager _gameManager;
         private ICustomizationMenu _customMenu;
-        private IGlobalScoreManager _globalScore;
+        private IScoreManager _score;
         private GameObject _camera;
         private InputAction _actionEscape;
         private MainMenuUI _menuUI;
         private AuthorUI _authorUI;
-        private GlobalSoreUI _globalScoreUI;
-        public void Init(ISettings settings, ICustomizationMenu custom, IGameManager gameManager, IGlobalScoreManager globalScore)
+        private SoreUI _globalScoreUI;
+        public void Init(ISettings settings, ICustomizationMenu custom, IGameManager gameManager, IScoreManager score)
         {
             InputManager.Instance.ChangeInputType(InputType.UI);
 
-            _globalScore = globalScore;
+            _score = score;
 
-            if (_globalScore != null)
+            if (_score != null)
             {
-                _globalScoreUI = GetComponentInChildren<GlobalSoreUI>();
-                _globalScoreUI.Init(globalScore);
+                _globalScoreUI = GetComponentInChildren<SoreUI>();
+                _globalScoreUI.Init(score);
             }
-
-            _globalScore?.StartAutoUpdate();
 
             _settings = settings;
             if (_settings != null) _settings.OnClosed += Show;
@@ -66,14 +64,12 @@ namespace WekenDev.MainMenu
                 if (_camera != null && !_camera.activeSelf) _camera.SetActive(true);
 
                 _menuUI.ShowMainMenu();
-                _globalScore?.StartAutoUpdate();
             }
         }
 
         public void Hide()
         {
             if (_camera != null) _camera.SetActive(false);
-            _globalScore?.StopAutoUpdate();
         }
 
         private void HandleEscapeKey(InputAction.CallbackContext context)

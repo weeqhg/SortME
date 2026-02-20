@@ -10,11 +10,13 @@ public class ContainerOrder : NetworkBehaviour
     [SerializeField] private OrderManager _orderManager;
     [SerializeField] private int _idContainer;
     public int GetId() => _idContainer - 1;
-    private string _orderID = "";
-    [SerializeField] private bool _hasCorrectItem = false;
+    [SerializeField]private string _orderID = "0000";
+
     [SerializeField] private int _playerInside = 0;
     private ItemManager _item;
     [SerializeField] private Transform _posPush;
+
+    private bool _isProcessingOrder = false;
     public bool IsPlayer
     {
         get
@@ -63,16 +65,10 @@ public class ContainerOrder : NetworkBehaviour
 
         if (other.CompareTag("Item"))
         {
-            ItemInfo info = other.GetComponent<ItemInfo>();
+            _item = other.GetComponent<ItemManager>();
 
-            if (info != null && info.nameKeyItem == _orderID)
+            if (_item != null && _item.info.state == ItemState.Ordering)
             {
-                _item = other.GetComponent<ItemManager>();
-
-                if (!IsServer) return;
-
-                _hasCorrectItem = true;
-
                 if (IsNearPlayer())
                 {
                     StartCoroutine(WaitAndCheckAgain());
@@ -121,6 +117,9 @@ public class ContainerOrder : NetworkBehaviour
             netObj.Despawn(false);
 
         yield return new WaitForSeconds(delay);
+
+        _isProcessingOrder = false;
+
         Open();
     }
 
@@ -130,37 +129,46 @@ public class ContainerOrder : NetworkBehaviour
 
         if (other.CompareTag("Item"))
         {
-            ItemInfo item = other.GetComponent<ItemInfo>();
-
-            if (item != null && item.nameKeyItem == _orderID)
-            {
-                _hasCorrectItem = false;
-                _item = null;
-            }
+            _item = null;
         }
         if (other.CompareTag("Player"))
         {
             _playerInside--;
 
-            if (IsNearPlayer())
+            if (_item != null && _item.info.state == ItemState.Ordering)
             {
-                StartCoroutine(WaitAndCheckAgain());
-            }
-            else
-            {
-                CheckCloseContainer();
+                if (IsNearPlayer())
+                {
+                    StartCoroutine(WaitAndCheckAgain());
+                }
+                else
+                {
+                    CheckCloseContainer();
+                }
             }
         }
     }
 
     private void CheckCloseContainer()
     {
-        if (_playerInside <= 0 && _hasCorrectItem)
+        if (_isProcessingOrder) return;
+
+        if (_playerInside <= 0)
         {
+            _isProcessingOrder = true;
+
+            if (_item.info.nameKeyItem == _orderID)
+            {
+                _orderManager.CompleteOrder();
+                _orderID = "0000";
+            }
+            else
+            {
+                _orderManager.FailOrder();
+                _orderID = "0000";
+            }
+
             StartCoroutine(CloseTemporarily());
-            _orderManager.CompleteOrder();
-            _orderID = "";
-            _hasCorrectItem = false;
         }
     }
     private bool IsNearPlayer()

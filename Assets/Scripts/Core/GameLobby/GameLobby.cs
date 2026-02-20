@@ -162,9 +162,10 @@ namespace WekenDev.MainMenu
             {
                 // Показываем индикатор на время подключения
                 StartLoadingAnimation();
-
                 // 1. Находим лобби
                 joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
+
+                await Task.Delay(3000);
 
                 // 2. Получаем Relay код
                 string relayCode = joinedLobby.Data[KEY_RELAY_JOIN_CODE].Value;

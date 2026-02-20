@@ -173,7 +173,7 @@ namespace WekenDev.Player.Controller
             JointDrive drive = new JointDrive();
             drive.positionSpring = 1000f;     // Жесткость
             drive.positionDamper = 50f;      // Демпфирование
-            drive.maximumForce = 2000f;      // Макс. сила
+            drive.maximumForce = 4000f;      // Макс. сила
 
             _bodyJoint.xDrive = drive;
             _bodyJoint.yDrive = drive;

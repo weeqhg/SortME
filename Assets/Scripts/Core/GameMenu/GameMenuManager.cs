@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using WekenDev.GameMenu.UI;
 using WekenDev.GameMenu.Voice;
 using WekenDev.InputSystem;
@@ -21,9 +22,9 @@ namespace WekenDev.GameMenu
         private VoiceHudGameMenu _voiceHudGameMenu;
         private IGameManager _gameManager;
         private ISettings _settings;
-        private IGlobalScoreManager _globalScore;
+        private IScoreManager _scoreManager;
         private InputAction _actionPlayer;
-        private GlobalSoreUI _globalScoreUI;
+        private SoreUI _globalScoreUI;
         private InputAction _actionUI;
         public event Action OnLeaveGame;
         private LobbyUI _lobbyUI;
@@ -36,15 +37,14 @@ namespace WekenDev.GameMenu
             _lobbyUI.ChangeJoinCode(code);
         }
 
-        public void Init(ISettings setting, IGameManager gameManager, IGlobalScoreManager globalScore)
+        public void Init(ISettings setting, IGameManager gameManager, IScoreManager score)
         {
-            _globalScore = globalScore;
+            _scoreManager = score;
 
-            if (_globalScore != null)
-            {
-                _globalScoreUI = GetComponentInChildren<GlobalSoreUI>();
-                _globalScoreUI.Init(globalScore);
-            }
+
+            _globalScoreUI = GetComponentInChildren<SoreUI>();
+            _globalScoreUI.Init(score);
+
 
             _lobbyUI = GetComponentInChildren<LobbyUI>();
             _voiceHudGameMenu = GetComponentInChildren<VoiceHudGameMenu>();
@@ -102,12 +102,15 @@ namespace WekenDev.GameMenu
         private void HandleLeaveLobby()
         {
             OnLeaveGame?.Invoke();
+
+            if (_gameManager == null) SceneManager.LoadScene("GameScene");
+
         }
 
         private void HandleShowMenu(InputAction.CallbackContext context)
         {
             AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
-            _globalScore?.StartAutoUpdate();
+
             if (_gameManager == null)
             {
                 InputManager.Instance.ChangeInputType(InputType.UI);
@@ -124,7 +127,7 @@ namespace WekenDev.GameMenu
         private void HandleHideMenu(InputAction.CallbackContext context)
         {
             AudioManager.Instance?.PlayAudioUI(TypeUiAudio.Button);
-            _globalScore?.StopAutoUpdate();
+
             // 1. Проверка на null ПЕРВОЙ
             if (_gameManager == null)
             {

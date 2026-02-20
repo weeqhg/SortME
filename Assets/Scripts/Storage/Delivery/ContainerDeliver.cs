@@ -1,3 +1,4 @@
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -21,6 +22,15 @@ public class ContainerDeliver : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         _netIsOpen.OnValueChanged += OnGateStateChanged;
+
+        if (_netIsOpen.Value)
+        {
+            Open();
+        }
+        else
+        {
+            Close();
+        }
     }
 
     public void Open()

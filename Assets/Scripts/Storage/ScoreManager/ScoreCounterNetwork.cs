@@ -1,6 +1,7 @@
-using Unity.Netcode;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 /// <summary>
 /// Сервер выбирает индекс отзыва и рассылает всем клиентам.
@@ -44,8 +45,8 @@ public class ScoreCounterNetwork : NetworkBehaviour
 
     private int GetPoolForScore(int stars)
     {
-        if (stars <= 2) return _scoreUI.GetCountBad();
-        if (stars == 3) return _scoreUI.GetCountNeutral();
+        if (stars <= 0) return _scoreUI.GetCountBad();
+        if (stars >= 1 && stars <= 3) return _scoreUI.GetCountNeutral();
         return _scoreUI.GetCountGood();
     }
 

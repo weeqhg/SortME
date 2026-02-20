@@ -55,6 +55,7 @@ public class TutorPlayerController : MonoBehaviour
         }
 
         InputManager.Instance.OnSensitivityChanged += HandheldSensitivityChange;
+
         _sensitivity = InputManager.Instance.SensitivityMouse;
         _leftMouse = InputManager.Instance.Actions.Player.GrabLeft;
         _rightMouse = InputManager.Instance.Actions.Player.GrabRight;
@@ -89,7 +90,7 @@ public class TutorPlayerController : MonoBehaviour
 
 
         _handsController.GetInput(_leftHandActive, _rightHandActive);
-        _cameraController.GetInput(lookInput);
+        _cameraController.GetInput(mouseDelta);
         _playerController.GetInput(moveInput, _isJump, _leftHandActive, _rightHandActive);
 
 

@@ -174,7 +174,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 896787006435590837}
-  m_Mesh: {fileID: 2534964839176971238, guid: 4f4d20d1a6c04254993efd0c6fff0f53, type: 3}
+  m_Mesh: {fileID: 5974047064912466469, guid: 9c6f320515d2f114aadf6c69e7c6f3b2, type: 3}
 --- !u!23 &7773701277743059190
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -811,7 +811,7 @@ MonoBehaviour:
   _feetsPos: {fileID: 6752987717547347922}
   _leftLeg: {fileID: 5379582838613940347}
   _rightLeg: {fileID: 5243457873420240587}
-  _speed: 5
+  _speed: 4
   _uprightStrength: 20
   _cameraPivot: {fileID: 3966235866877463070}
   _jumpForce: 3
@@ -1293,7 +1293,7 @@ PrefabInstance:
     - target: {fileID: 5631970234333447461, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 7111256064573956477, guid: 06c76e52e523a3c4997124a512b31dca, type: 3}
     - target: {fileID: 5631970234333447461, guid: 7f7ce4c6272b9d84391674123e1fa5b6, type: 3}
       propertyPath: m_Quality
       value: 0
@@ -2399,7 +2399,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 60
   m_LinearDamping: 1
-  m_AngularDamping: 1
+  m_AngularDamping: 2
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

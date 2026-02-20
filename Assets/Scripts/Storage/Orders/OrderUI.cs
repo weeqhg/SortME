@@ -18,6 +18,9 @@ public class OrderUI : NetworkBehaviour
     [SerializeField] private CanvasGroup _order;
     [SerializeField] private CanvasGroup _numGate;
 
+    [SerializeField] private CanvasGroup _nonItem;
+    [SerializeField] private CanvasGroup _searchOrder;
+
     [SerializeField] private List<Sprite> _availableIcons;
     private NetworkVariable<int> _iconIndex = new NetworkVariable<int>(0);
     private NetworkVariable<float> _waitProgress = new NetworkVariable<float>(0f);
@@ -52,6 +55,8 @@ public class OrderUI : NetworkBehaviour
     }
     public void Init()
     {
+        _nonItem.alpha = 1f;
+        _searchOrder.alpha = 0f;
         _numGate.alpha = 0f;
         _order.alpha = 0f;
         _numOrder.alpha = 0f;
@@ -60,6 +65,8 @@ public class OrderUI : NetworkBehaviour
     [ClientRpc]
     public void ChangeStateOnWaitClientRpc()
     {
+        _nonItem.alpha = 1f;
+        _searchOrder.alpha = 0f;
         _order.alpha = 0f;
         _numGate.alpha = 0f;
         _numOrder.alpha = 0f;
@@ -68,6 +75,8 @@ public class OrderUI : NetworkBehaviour
     [ClientRpc]
     public void ChangeStateOnCompleteClientRpc()
     {
+        _nonItem.alpha = 0f;
+        _searchOrder.alpha = 0f;
         _order.alpha = 0f;
         _numGate.alpha = 0f;
         _numOrder.alpha = 0f;
@@ -78,6 +87,8 @@ public class OrderUI : NetworkBehaviour
     [ClientRpc]
     public void ChangeStateOnFailClientRpc()
     {
+        _nonItem.alpha = 0f;
+        _searchOrder.alpha = 0f;
         _order.alpha = 0f;
         _numGate.alpha = 0f;
         _numOrder.alpha = 0f;
@@ -88,6 +99,8 @@ public class OrderUI : NetworkBehaviour
     [ClientRpc]
     private void ChangeStateOrderClientRpc()
     {
+        _nonItem.alpha = 0f;
+        _searchOrder.alpha = 0f;
         _numOrder.alpha = 1f;
         _order.alpha = 1f;
         _numGate.alpha = 0f;
@@ -98,6 +111,8 @@ public class OrderUI : NetworkBehaviour
     [ClientRpc]
     private void ChangeStateGateClientRpc(int index)
     {
+        _nonItem.alpha = 0f;
+        _searchOrder.alpha = 0f;
         _numOrder.alpha = 0f;
         _order.alpha = 1f;
         _numGate.alpha = 1f;
@@ -108,13 +123,7 @@ public class OrderUI : NetworkBehaviour
         _audioSource.PlayOneShot(_gateOrder);
     }
 
-    [ClientRpc]
-    public void ShowRatingClientRpc(int stars)
-    {
-        ShowRatingLocal(stars);
-    }
-
-    private void ShowRatingLocal(int stars)
+    public void ShowRatingLocal(int stars)
     {
         int clamped = Mathf.Clamp(stars, 0, 5);
 
@@ -168,6 +177,8 @@ public class OrderUI : NetworkBehaviour
         }
 
         _ratingGroup.alpha = 0f;
+
+        _searchOrder.alpha = 1f;
 
         _ratingHideRoutine = null;
     }

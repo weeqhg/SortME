@@ -196,8 +196,8 @@ public class ScoreCounterUI : MonoBehaviour
 
     private List<ReviewScriptableObject> GetPoolForScore(int stars)
     {
-        if (stars <= 2) return _badReviews;
-        if (stars == 3) return _neutralReviews;
+        if (stars <= 0) return _badReviews;
+        if (stars >= 1 && stars <= 3) return _neutralReviews;
         return _goodReviews;
     }
 

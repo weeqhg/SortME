@@ -34,6 +34,22 @@ MonoBehaviour:
     m_Localized: Gate {0}
     m_Metadata:
       m_Items: []
+  - m_Id: 4381832706514944
+    m_Localized: Delivery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4415515292712960
+    m_Localized: Gate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4430362334715904
+    m_Localized: Post goods
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4430691222675456
+    m_Localized: Order search
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

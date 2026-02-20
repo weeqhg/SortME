@@ -154,7 +154,7 @@ public class ItemManager : NetworkBehaviour
 
         float force = collision.relativeVelocity.magnitude;
 
-        if (force > 5f)
+        if (force > 6f)
         {
             int damage = (int)force * 2;
             if (info.IsBox)

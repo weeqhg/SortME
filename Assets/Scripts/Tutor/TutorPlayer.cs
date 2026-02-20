@@ -122,7 +122,7 @@ public class TutorPlayer : MonoBehaviour
     {
         HandleMovement();
 
-        if (_moveInput.magnitude > 0.1f || _leftHand == true || _rightHand == true) StabilizeSingleBody();
+        StabilizeSingleBody();
 
     }
 

@@ -46,10 +46,7 @@ public class OrderManager : NetworkBehaviour
             _activeOrder.item.OnOutRack -= OnItemStateChanged;
             _activeOrder.item.OnDestroyItem -= OnDestroyItem;
 
-            int stars = _scoreCounter.CountScoreForOrder(_activeOrder.item.GetCurrentDurabily(), _activeOrder.timeLimit, _activeOrder.maxTimeLimit, _activeOrder.item.info.IsBox);
-
-            if (_orderUI != null)
-                _orderUI.ShowRatingClientRpc(stars);
+            if (IsServer) CounterClientRpc(_activeOrder.item.GetCurrentDurabily(), _activeOrder.timeLimit, _activeOrder.maxTimeLimit, _activeOrder.item.info.IsBox);
 
             _activeOrder = null;
 
@@ -57,19 +54,28 @@ public class OrderManager : NetworkBehaviour
         }
     }
 
-    private void FailOrder()
+    public void FailOrder()
     {
-        _activeOrder.item.OnOutRack -= OnItemStateChanged;
-        _activeOrder.item.OnDestroyItem -= OnDestroyItem;
+        if (_activeOrder != null) _activeOrder.item.OnOutRack -= OnItemStateChanged;
+        if (_activeOrder != null) _activeOrder.item.OnDestroyItem -= OnDestroyItem;
 
         _orderUI.ChangeStateOnFailClientRpc();
 
-        _scoreCounter.CountScoreForOrder(0, 0, _activeOrder.maxTimeLimit, false);
-
-        if (_orderUI != null)
-            _orderUI.ShowRatingClientRpc(0);
+        if (IsServer)
+        {
+            CounterClientRpc(0, 0, 0, false);
+        }
 
         _activeOrder = null;
+    }
+
+    [ClientRpc]
+    private void CounterClientRpc(int durability, float timeRemaining, float maxTime, bool isBox)
+    {
+        int stars = _scoreCounter.CountScoreForOrder(durability, timeRemaining, maxTime, isBox);
+
+        if (_orderUI != null)
+            _orderUI.ShowRatingLocal(stars);
     }
 
     private void Update()
